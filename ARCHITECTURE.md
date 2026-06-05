@@ -1,11 +1,12 @@
-# SENTINEL — Commit Governance Platform
+# SENTINEL — Git Governance, Merge Intelligence & Release Readiness Platform
 
-## Architecture Document v1.0
+## Architecture Document v2.0
 
 > **Codename:** SENTINEL  
-> **Purpose:** Enterprise-grade commit governance, merge coverage analysis, content verification, and executive reporting for multi-folder GitHub repositories.  
+> **Product Vision:** The definitive platform for Git Governance, Merge Intelligence, and Release Readiness — replacing fragile spreadsheet workflows with deterministic, auditable, enterprise-grade analytics.  
 > **Philosophy:** Deterministic. Auditable. Traceable. Zero AI/LLM dependency.  
-> **Cost:** $0 — Every tool, library, and service in this stack is free and open-source.
+> **Cost:** $0 — Every tool, library, and service in this stack is free and open-source.  
+> **Commercialization:** Every design decision supports future productization, multi-tenancy, and white-label deployment.
 
 ---
 
@@ -30,8 +31,9 @@
 17. [Monitoring & Observability](#17-monitoring--observability)
 18. [Project Structure](#18-project-structure)
 19. [Development Workflow](#19-development-workflow)
-20. [Performance Targets](#20-performance-targets)
-21. [Appendix: Decision Log](#21-appendix-decision-log)
+20. [Commercial Product Goal](#20-commercial-product-goal)
+21. [Performance Targets](#21-performance-targets)
+22. [Appendix: Decision Log](#22-appendix-decision-log)
 
 ---
 
@@ -39,7 +41,7 @@
 
 ### 1.1 What SENTINEL Does
 
-SENTINEL is a self-hosted platform that connects to GitHub repositories, ingests commit history, and produces deterministic governance analytics across multiple customer configuration folders.
+SENTINEL is not a "GitHub Commit Reporting Tool." It is a **Git Governance, Merge Intelligence & Release Readiness Platform** that transforms raw commit data into actionable governance intelligence for engineering leadership.
 
 It answers five core questions:
 
@@ -53,28 +55,49 @@ It answers five core questions:
 
 ### 1.2 System Boundaries
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        SENTINEL PLATFORM                        │
-│                                                                 │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐   │
-│  │  GitHub   │  │  FastAPI  │  │  Celery   │  │   Next.js    │   │
-│  │ Ingestion │──│  Backend  │──│  Workers  │  │  Dashboard   │   │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────────┘   │
-│       │              │              │               │            │
-│       └──────────────┴──────────────┘               │            │
-│                      │                              │            │
-│              ┌───────┴───────┐              ┌───────┴───────┐   │
-│              │  PostgreSQL   │              │     Redis      │   │
-│              │   Database    │              │   Cache/Queue  │   │
-│              └───────────────┘              └───────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-         │                                           │
-         ▼                                           ▼
-   ┌──────────┐                               ┌──────────┐
-   │  GitHub   │                               │  Browser  │
-   │   API     │                               │  Client   │
-   └──────────┘                               └──────────┘
+```mermaid
+graph TB
+    subgraph External["External Systems"]
+        GH["GitHub API"]
+        BR["Browser Client"]
+    end
+
+    subgraph SENTINEL["SENTINEL PLATFORM"]
+        subgraph Ingestion["Ingestion Layer"]
+            GI["GitHub Ingestion<br/>Service"]
+        end
+
+        subgraph Backend["Application Layer"]
+            FA["FastAPI<br/>Backend"]
+            CW["Celery<br/>Workers"]
+        end
+
+        subgraph Frontend["Presentation Layer"]
+            NJ["Next.js<br/>Dashboard"]
+        end
+
+        subgraph Data["Data Layer"]
+            PG[("PostgreSQL<br/>Database")]
+            RD[("Redis<br/>Cache / Queue")]
+        end
+    end
+
+    GH -->|REST API / git clone| GI
+    GI --> FA
+    FA <--> CW
+    FA --> PG
+    FA --> RD
+    CW --> PG
+    CW --> RD
+    NJ -->|REST API| FA
+    BR -->|HTTPS| NJ
+
+    style SENTINEL fill:#0d1117,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style External fill:#1a1d27,stroke:#909296,stroke-width:1px,color:#f1f3f5
+    style Ingestion fill:#1a2332,stroke:#4C9AFF,stroke-width:1px,color:#f1f3f5
+    style Backend fill:#1a2332,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
+    style Frontend fill:#1a2332,stroke:#6554C0,stroke-width:1px,color:#f1f3f5
+    style Data fill:#1a2332,stroke:#FFAB00,stroke-width:1px,color:#f1f3f5
 ```
 
 ### 1.3 Key Actors
@@ -86,6 +109,25 @@ It answers five core questions:
 | **Manager** | Uses dashboard, exports reports |
 | **Admin** | Configures repos, folders, rules |
 | **System** | Scheduled ingestion, background analysis |
+
+### 1.4 Product Positioning
+
+```mermaid
+quadrantChart
+    title SENTINEL vs. Alternatives
+    x-axis "Low Automation" --> "High Automation"
+    y-axis "Low Intelligence" --> "High Intelligence"
+    quadrant-1 "SENTINEL Target Zone"
+    quadrant-2 "Niche Tools"
+    quadrant-3 "Manual Processes"
+    quadrant-4 "CI/CD Tools"
+    "Excel Reports": [0.15, 0.10]
+    "Basic Commit Checker": [0.30, 0.25]
+    "GitHub Insights": [0.55, 0.35]
+    "SonarQube": [0.65, 0.50]
+    "SENTINEL v1.0": [0.75, 0.82]
+    "SENTINEL v2.0 Vision": [0.90, 0.95]
+```
 
 ---
 
@@ -101,17 +143,36 @@ It answers five core questions:
 | **Offline-First** | All data is stored locally. No external API calls during analysis (only during ingestion). |
 | **Zero AI** | No LLMs, no ML models, no probabilistic inference. Rule-based only. |
 | **Free Forever** | Every dependency is MIT/Apache/BSD licensed. No vendor lock-in. No paid tiers. |
+| **Commercializable** | Architecture supports multi-tenancy, white-labeling, and SaaS deployment from day one. |
 
 ### 2.2 Design Patterns
 
-| Pattern | Where Used | Why |
-|---------|-----------|-----|
-| **Repository Pattern** | Database access | Decouples business logic from ORM/SQL |
-| **Service Layer** | Each module | Encapsulates business rules, testable in isolation |
-| **Event-Driven** | Ingestion pipeline | Celery tasks trigger downstream analysis after data loads |
-| **CQRS (lite)** | Dashboard queries vs. write operations | Separate read-optimized views from write models |
-| **Strategy Pattern** | Exception rules engine | Pluggable rule definitions without modifying core |
-| **Builder Pattern** | Report generation | Composable Excel/PDF report construction |
+```mermaid
+graph LR
+    subgraph Patterns["Core Design Patterns"]
+        RP["Repository<br/>Pattern"]
+        SL["Service<br/>Layer"]
+        ED["Event<br/>Driven"]
+        CQ["CQRS<br/>Lite"]
+        SP["Strategy<br/>Pattern"]
+        BP["Builder<br/>Pattern"]
+    end
+
+    RP -->|"Decouples"| DB["Database Access"]
+    SL -->|"Encapsulates"| BL["Business Logic"]
+    ED -->|"Triggers"| IP["Ingestion Pipeline"]
+    CQ -->|"Separates"| RW["Read / Write Ops"]
+    SP -->|"Pluggable"| RE["Rule Engine"]
+    BP -->|"Composes"| RG["Report Generation"]
+
+    style Patterns fill:#0d1117,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style RP fill:#1a2332,stroke:#4C9AFF,color:#f1f3f5
+    style SL fill:#1a2332,stroke:#36B37E,color:#f1f3f5
+    style ED fill:#1a2332,stroke:#FFAB00,color:#f1f3f5
+    style CQ fill:#1a2332,stroke:#6554C0,color:#f1f3f5
+    style SP fill:#1a2332,stroke:#FF5630,color:#f1f3f5
+    style BP fill:#1a2332,stroke:#FF8B00,color:#f1f3f5
+```
 
 ### 2.3 Error Handling Philosophy
 
@@ -132,7 +193,60 @@ Errors are:
 
 ## 3. Technology Stack
 
-### 3.1 Backend
+### 3.1 Stack Overview
+
+```mermaid
+graph TB
+    subgraph FE["Frontend"]
+        NX["Next.js 15+"]
+        TS["TypeScript 5.5+"]
+        TW["Tailwind CSS 4+"]
+        RC["Recharts"]
+        ZS["Zustand"]
+    end
+
+    subgraph BE["Backend"]
+        FA["FastAPI"]
+        SA["SQLAlchemy 2.0"]
+        PY["Pydantic 2.0"]
+        CL["Celery 5.4+"]
+        SL["structlog"]
+    end
+
+    subgraph DB["Data Stores"]
+        PG[("PostgreSQL 16+")]
+        RD[("Redis 7+")]
+    end
+
+    subgraph INFRA["Infrastructure"]
+        DK["Docker"]
+        DC["Docker Compose"]
+        NG["Nginx"]
+        PR["Prometheus"]
+        GR["Grafana"]
+    end
+
+    subgraph EXPORT["Export Engines"]
+        OP["openpyxl<br/>(Excel)"]
+        WP["WeasyPrint<br/>(PDF)"]
+        MP["matplotlib<br/>(Charts)"]
+    end
+
+    FE -->|"REST API"| BE
+    BE --> DB
+    BE --> EXPORT
+    INFRA --> BE
+    INFRA --> FE
+    INFRA --> DB
+
+    style FE fill:#1a1d27,stroke:#6554C0,stroke-width:2px,color:#f1f3f5
+    style BE fill:#1a1d27,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style DB fill:#1a1d27,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
+    style INFRA fill:#1a1d27,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style EXPORT fill:#1a1d27,stroke:#FF8B00,stroke-width:2px,color:#f1f3f5
+```
+
+### 3.2 Backend
 
 | Component | Technology | Version | License | Purpose |
 |-----------|-----------|---------|---------|---------|
@@ -151,7 +265,7 @@ Errors are:
 | **Scheduling** | Celery Beat | — | BSD | Periodic task scheduling |
 | **Logging** | structlog | 24.0+ | MIT | Structured JSON logging |
 
-### 3.2 Frontend
+### 3.3 Frontend
 
 | Component | Technology | Version | License | Purpose |
 |-----------|-----------|---------|---------|---------|
@@ -167,14 +281,14 @@ Errors are:
 | **Forms** | React Hook Form | 7.0+ | MIT | Form handling |
 | **Toast** | Sonner | 1.7+ | MIT | Notification toasts |
 
-### 3.3 Database
+### 3.4 Database
 
 | Component | Technology | Version | License | Purpose |
 |-----------|-----------|---------|---------|---------|
 | **Primary DB** | PostgreSQL | 16+ | PostgreSQL | Main data store |
 | **Cache** | Redis | 7.0+ | BSD-3 | Query cache + task broker |
 
-### 3.4 Infrastructure
+### 3.5 Infrastructure
 
 | Component | Technology | Version | License | Purpose |
 |-----------|-----------|---------|---------|---------|
@@ -185,7 +299,7 @@ Errors are:
 | **Monitoring** | Prometheus + Grafana | Latest | Apache-2.0 | Metrics & dashboards |
 | **Log Aggregation** | Loki | Latest | AGPL-3.0 | Centralized logging |
 
-### 3.5 Why These Choices
+### 3.6 Why These Choices
 
 | Decision | Rationale |
 |----------|-----------|
@@ -205,98 +319,99 @@ Errors are:
 
 ### 4.1 Layered Architecture
 
-```
-┌───────────────────────────────────────────────────────────────┐
-│                      PRESENTATION LAYER                       │
-│                                                               │
-│   Next.js Dashboard    │    REST API (FastAPI)    │   Exports  │
-│   (Browser Client)     │    (JSON Responses)      │  (XLS/PDF) │
-└────────────┬───────────┴────────────┬─────────────┴───────────┘
-             │                        │
-┌────────────▼────────────────────────▼─────────────────────────┐
-│                       API GATEWAY LAYER                        │
-│                                                               │
-│   Authentication  │  Rate Limiting  │  Request Validation     │
-│   (JWT + RBAC)    │  (SlowAPI)      │  (Pydantic Models)      │
-└────────────┬──────┴────────┬────────┴────────┬────────────────┘
-             │               │                 │
-┌────────────▼───────────────▼─────────────────▼────────────────┐
-│                       SERVICE LAYER                            │
-│                                                               │
-│  ┌─────────────┐ ┌──────────────┐ ┌─────────────────────┐    │
-│  │   Commit     │ │    Jira      │ │   Folder Coverage   │    │
-│  │  Collector   │ │  Aggregation │ │      Engine         │    │
-│  │  Service     │ │   Service    │ │     Service         │    │
-│  └─────────────┘ └──────────────┘ └─────────────────────┘    │
-│                                                               │
-│  ┌─────────────┐ ┌──────────────┐ ┌─────────────────────┐    │
-│  │  Content     │ │  Merge Delay │ │   Folder Health     │    │
-│  │ Verification │ │  Analytics   │ │     Engine          │    │
-│  │  Service     │ │   Service    │ │     Service         │    │
-│  └─────────────┘ └──────────────┘ └─────────────────────┘    │
-│                                                               │
-│  ┌─────────────┐ ┌──────────────┐ ┌─────────────────────┐    │
-│  │  Exception   │ │  Historical  │ │    Reporting        │    │
-│  │  Detection   │ │   Trends     │ │     Engine          │    │
-│  │   Engine     │ │   Service    │ │    Service          │    │
-│  └─────────────┘ └──────────────┘ └─────────────────────┘    │
-└────────────┬──────────────┬──────────────┬────────────────────┘
-             │              │              │
-┌────────────▼──────────────▼──────────────▼────────────────────┐
-│                     REPOSITORY LAYER                           │
-│                                                               │
-│   CommitRepo  │  JiraRepo  │  FolderRepo  │  SnapshotRepo    │
-│   FileRepo    │  RuleRepo  │  AuditRepo   │  ReportRepo      │
-└────────────┬──────────────┬──────────────┬────────────────────┘
-             │              │              │
-┌────────────▼──────────────▼──────────────▼────────────────────┐
-│                      DATA LAYER                                │
-│                                                               │
-│          PostgreSQL              │           Redis             │
-│   (Persistent Storage)          │    (Cache + Task Broker)    │
-└─────────────────────────────────┴─────────────────────────────┘
+```mermaid
+graph TB
+    subgraph PRES["🖥️ PRESENTATION LAYER"]
+        NJ["Next.js Dashboard<br/>(Browser Client)"]
+        API["REST API<br/>(FastAPI — JSON)"]
+        EXP["Exports<br/>(Excel / PDF)"]
+    end
+
+    subgraph GATE["🔐 API GATEWAY LAYER"]
+        AUTH["Authentication<br/>(JWT + RBAC)"]
+        RL["Rate Limiting<br/>(SlowAPI)"]
+        VAL["Request Validation<br/>(Pydantic)"]
+    end
+
+    subgraph SVC["⚙️ SERVICE LAYER — 10 Modules"]
+        M1["Commit<br/>Collector"]
+        M2["Jira<br/>Aggregation"]
+        M3["Folder<br/>Coverage"]
+        M4["Content<br/>Verification"]
+        M5["Merge Delay<br/>Analytics"]
+        M6["Folder<br/>Health"]
+        M7["Exception<br/>Detection"]
+        M8["Historical<br/>Trends"]
+        M9["Dashboard<br/>Service"]
+        M10["Reporting<br/>Engine"]
+    end
+
+    subgraph REPO["📦 REPOSITORY LAYER"]
+        CR["CommitRepo"]
+        JR["JiraRepo"]
+        FR["FolderRepo"]
+        HR["FileHashRepo"]
+        VR["ViolationRepo"]
+        SR["SnapshotRepo"]
+        AR["AuditRepo"]
+        RR["ReportRepo"]
+    end
+
+    subgraph DATA["💾 DATA LAYER"]
+        PG[("PostgreSQL<br/>Persistent Storage")]
+        RD[("Redis<br/>Cache + Task Broker")]
+    end
+
+    PRES --> GATE
+    GATE --> SVC
+    SVC --> REPO
+    REPO --> DATA
+
+    style PRES fill:#1a1040,stroke:#6554C0,stroke-width:2px,color:#f1f3f5
+    style GATE fill:#1a2020,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
+    style SVC fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style REPO fill:#1a2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style DATA fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
 ```
 
 ### 4.2 Module Dependency Graph
 
-```
-                    ┌──────────────────┐
-                    │  M1: Commit      │
-                    │  Collector       │
-                    └────────┬─────────┘
-                             │
-                    ┌────────▼─────────┐
-                    │  M2: Jira        │
-                    │  Aggregation     │
-                    └────────┬─────────┘
-                             │
-              ┌──────────────┼──────────────┐
-              │              │              │
-     ┌────────▼────┐ ┌──────▼──────┐ ┌─────▼───────┐
-     │ M3: Folder  │ │ M4: Content │ │ M5: Merge   │
-     │ Coverage    │ │ Verification│ │ Delay       │
-     └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
-            │               │               │
-            └───────────────┼───────────────┘
-                            │
-                   ┌────────▼─────────┐
-                   │  M6: Folder      │
-                   │  Health          │
-                   └────────┬─────────┘
-                            │
-              ┌─────────────┼─────────────┐
-              │             │             │
-     ┌────────▼────┐ ┌─────▼──────┐ ┌────▼──────────┐
-     │ M7: Exception│ │ M8: Trends │ │ M9: Dashboard │
-     │ Detection   │ │ Analytics  │ │ (Frontend)    │
-     └──────┬──────┘ └──────┬─────┘ └───────────────┘
-            │               │
-            └───────┬───────┘
-                    │
-           ┌────────▼─────────┐
-           │  M10: Reporting  │
-           │  (Excel + PDF)   │
-           └──────────────────┘
+```mermaid
+graph TD
+    M1["🔌 M1: Commit Collector<br/><i>GitHub Ingestion</i>"]
+    M2["🎫 M2: Jira Aggregation<br/><i>Ticket Grouping</i>"]
+    M3["📊 M3: Folder Coverage<br/><i>Merge Status</i>"]
+    M4["🔍 M4: Content Verification<br/><i>SHA256 Hash Comparison</i>"]
+    M5["⏱️ M5: Merge Delay Analytics<br/><i>Propagation Timing</i>"]
+    M6["💚 M6: Folder Health<br/><i>Composite Scoring</i>"]
+    M7["🚨 M7: Exception Detection<br/><i>Rule-Based Violations</i>"]
+    M8["📈 M8: Historical Trends<br/><i>Time-Series Analytics</i>"]
+    M9["🖥️ M9: Executive Dashboard<br/><i>Next.js Frontend</i>"]
+    M10["📄 M10: Reporting Engine<br/><i>Excel + PDF Generation</i>"]
+
+    M1 --> M2
+    M2 --> M3
+    M2 --> M4
+    M2 --> M5
+    M3 --> M6
+    M4 --> M6
+    M5 --> M6
+    M6 --> M7
+    M6 --> M8
+    M6 --> M9
+    M7 --> M10
+    M8 --> M10
+
+    style M1 fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style M2 fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style M3 fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style M4 fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
+    style M5 fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
+    style M6 fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style M7 fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
+    style M8 fill:#1a1040,stroke:#6554C0,stroke-width:2px,color:#f1f3f5
+    style M9 fill:#1a1040,stroke:#6554C0,stroke-width:2px,color:#f1f3f5
+    style M10 fill:#2a1a00,stroke:#FF8B00,stroke-width:2px,color:#f1f3f5
 ```
 
 ---
@@ -316,38 +431,23 @@ Errors are:
 
 **Ingestion Pipeline:**
 
-```
-GitHub API / git log
-        │
-        ▼
-┌──────────────────┐
-│  Raw Commit      │
-│  Parser          │ ──→ Normalize author, dates, message
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│  Jira Extractor  │ ──→ Regex: r'[A-Z]{2,10}-\d{3,6}'
-│                  │     Configurable per repository
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│  File Differ     │ ──→ Parse changed files, detect folder
-│                  │     Map file → folder using path prefix
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│  Deduplication   │ ──→ SHA-based dedup, skip existing
-│                  │     Upsert on conflict
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│  Database Write  │ ──→ Batch insert (500 per batch)
-│                  │     Transaction-safe
-└──────────────────┘
+```mermaid
+graph TD
+    SRC["GitHub API / git log"]
+    P1["📝 Raw Commit Parser<br/><small>Normalize author, dates, message</small>"]
+    P2["🎫 Jira Extractor<br/><small>Regex: [A-Z]{2,10}-\d{3,6}<br/>Configurable per repository</small>"]
+    P3["📁 File Differ<br/><small>Parse changed files, detect folder<br/>Map file → folder via path prefix</small>"]
+    P4["🔄 Deduplication<br/><small>SHA-based dedup, skip existing<br/>Upsert on conflict</small>"]
+    P5["💾 Database Write<br/><small>Batch insert — 500 per batch<br/>Transaction-safe</small>"]
+
+    SRC --> P1 --> P2 --> P3 --> P4 --> P5
+
+    style SRC fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style P1 fill:#1a1d27,stroke:#4C9AFF,stroke-width:1px,color:#f1f3f5
+    style P2 fill:#1a1d27,stroke:#FFAB00,stroke-width:1px,color:#f1f3f5
+    style P3 fill:#1a1d27,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
+    style P4 fill:#1a1d27,stroke:#6554C0,stroke-width:1px,color:#f1f3f5
+    style P5 fill:#1a1d27,stroke:#FF8B00,stroke-width:1px,color:#f1f3f5
 ```
 
 **Configuration:**
@@ -419,14 +519,24 @@ JOIN commit_files ON ...
 GROUP BY jira_id;
 ```
 
-**Jira Status Classification:**
+**Jira Lifecycle Classification:**
 
-| Status | Condition |
-|--------|-----------|
-| `ACTIVE` | Last update within 7 days |
-| `STALE` | Last update 8–30 days ago |
-| `DORMANT` | Last update 31–90 days ago |
-| `ARCHIVED` | Last update > 90 days ago |
+```mermaid
+stateDiagram-v2
+    [*] --> ACTIVE: Last update ≤ 7 days
+    ACTIVE --> STALE: No update 8-30 days
+    STALE --> DORMANT: No update 31-90 days
+    DORMANT --> ARCHIVED: No update > 90 days
+    ACTIVE --> ACTIVE: New commit
+    STALE --> ACTIVE: New commit
+    DORMANT --> ACTIVE: New commit
+    ARCHIVED --> ACTIVE: New commit
+
+    state ACTIVE {
+        [*] --> Monitoring
+        Monitoring --> [*]
+    }
+```
 
 **Key Service Interface:**
 
@@ -472,6 +582,15 @@ Output:
   }
 ```
 
+**Coverage Status Distribution:**
+
+```mermaid
+pie title Coverage Status Distribution (Example)
+    "MERGED (100%)" : 124
+    "PARTIAL (1-99%)" : 87
+    "MISSING (0%)" : 36
+```
+
 **Coverage Matrix (per Jira × Folder):**
 
 ```
@@ -502,19 +621,26 @@ class FolderCoverageService:
 
 **Verification Pipeline:**
 
-```
-For each Jira ticket:
-  1. Identify all files changed by commits linked to this Jira
-  2. For each file:
-     a. Get the file content from each folder at HEAD (latest commit)
-     b. Compute SHA256 hash
-     c. Compare hashes across all folders
-     d. Record: file_path, folder, sha256, file_size, last_modified_commit
+```mermaid
+graph TD
+    START["For each Jira Ticket"]
+    S1["1. Identify all files changed<br/>by commits linked to this Jira"]
+    S2["2. Get file content from<br/>each folder at HEAD"]
+    S3["3. Compute SHA256 hash<br/>(normalized line endings)"]
+    S4{"Hashes<br/>Match?"}
+    IDENT["✅ IDENTICAL<br/>Drift Score: 0.0"]
+    DIFF["❌ DIFFERENT<br/>Flag divergent folders"]
+    MISS["⚠️ MISSING<br/>File not found in folder"]
 
-  Comparison Logic:
-     - If all hashes identical → IDENTICAL
-     - If hashes differ       → DIFFERENT (flag which folders diverge)
-     - If file missing        → MISSING
+    START --> S1 --> S2 --> S3 --> S4
+    S4 -->|"All same"| IDENT
+    S4 -->|"Mismatch"| DIFF
+    S4 -->|"Not found"| MISS
+
+    style START fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style IDENT fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style DIFF fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
+    style MISS fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
 ```
 
 **Content Retrieval Strategy:**
@@ -595,11 +721,26 @@ For each Jira:
 
   propagation_delay  = latest_merge_date - initial_commit_date   (in days)
   first_response     = first_merge_date - initial_commit_date    (in days)
+```
 
-  delay_classification:
-    0–3 days   → HEALTHY  (🟢)
-    4–14 days  → WARNING  (🟡)
-    15+ days   → CRITICAL (🔴)
+**Delay Classification:**
+
+```mermaid
+graph LR
+    subgraph Classification["Merge Delay Classification"]
+        H["🟢 HEALTHY<br/>0–3 days"]
+        W["🟡 WARNING<br/>4–14 days"]
+        C["🔴 CRITICAL<br/>15+ days"]
+    end
+
+    COMMIT["Initial<br/>Commit"] -->|"Quick propagation"| H
+    COMMIT -->|"Moderate delay"| W
+    COMMIT -->|"Severe backlog"| C
+
+    style H fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style W fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
+    style C fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
+    style COMMIT fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
 ```
 
 **Delay Metrics Per Folder:**
@@ -627,6 +768,16 @@ class MergeDelayService:
 
 **Responsibility:** Produce a composite health score for each folder.
 
+**Health Score Composition:**
+
+```mermaid
+pie title Folder Health Score Weights
+    "Coverage (35%)" : 35
+    "Consistency (30%)" : 30
+    "Timeliness (20%)" : 20
+    "Completeness (15%)" : 15
+```
+
 **Health Score Formula:**
 
 ```
@@ -643,29 +794,35 @@ For each folder:
       timeliness_score  × 0.20 +
       completeness      × 0.15
   )
-
-  classification:
-    90–100 → EXCELLENT (🟢)
-    70–89  → GOOD      (🟢)
-    50–69  → WARNING   (🟡)
-    25–49  → POOR      (🟠)
-    0–24   → CRITICAL  (🔴)
 ```
 
-**Folder Ranking:**
+**Health Classification:**
 
+```mermaid
+graph LR
+    E["🟢 EXCELLENT<br/>90–100"]
+    G["🟢 GOOD<br/>70–89"]
+    W["🟡 WARNING<br/>50–69"]
+    P["🟠 POOR<br/>25–49"]
+    C["🔴 CRITICAL<br/>0–24"]
+
+    E --- G --- W --- P --- C
+
+    style E fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style G fill:#0d2018,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
+    style W fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
+    style P fill:#2a1500,stroke:#FF8B00,stroke-width:2px,color:#f1f3f5
+    style C fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
 ```
-All folders ranked by health_score descending.
 
-Example Output:
-  1. MET      → 94.2%  🟢 EXCELLENT
-  2. JCF      → 91.0%  🟢 EXCELLENT
-  3. vanilla  → 87.5%  🟢 GOOD
-  4. MOD      → 72.3%  🟢 GOOD
-  5. WMP      → 58.1%  🟡 WARNING
-  6. IOM      → 51.9%  🟡 WARNING
-  7. YATH     → 48.3%  🟠 POOR
-  8. AMO      → 31.7%  🟠 POOR
+**Folder Ranking (Example):**
+
+```mermaid
+xychart-beta
+    title "Folder Health Scores"
+    x-axis ["MET", "JCF", "vanilla", "MOD", "WMP", "IOM", "YATH", "AMO"]
+    y-axis "Health Score %" 0 --> 100
+    bar [94.2, 91.0, 87.5, 72.3, 58.1, 51.9, 48.3, 31.7]
 ```
 
 **Key Service Interface:**
@@ -703,20 +860,33 @@ class GovernanceRule(ABC):
         pass
 ```
 
-**Built-in Rules:**
+**Built-in Governance Rules:**
 
-| Rule ID | Name | Condition | Severity |
-|---------|------|-----------|----------|
-| `GOV-001` | Vanilla-only commit | Jira exists only in `vanilla` and nowhere else | CRITICAL |
-| `GOV-002` | Extreme low coverage | Coverage < 25% | HIGH |
-| `GOV-003` | Severe merge delay | Merge delay > 30 days | HIGH |
-| `GOV-004` | Content divergence | Same file has different content across folders | CRITICAL |
-| `GOV-005` | Stale Jira | No activity in 60+ days with incomplete coverage | MEDIUM |
-| `GOV-006` | Single-folder merge | Jira merged to only 1 non-vanilla folder | HIGH |
-| `GOV-007` | Author isolation | Only 1 author touching a Jira with 10+ commits | MEDIUM |
-| `GOV-008` | Folder regression | Folder health dropped 10+ points in a week | HIGH |
-| `GOV-009` | Mass missing merge | 5+ Jiras missing from a single folder | HIGH |
-| `GOV-010` | Zero propagation | Jira committed 14+ days ago, only in 1 folder | CRITICAL |
+```mermaid
+graph TD
+    subgraph CRITICAL["🔴 CRITICAL Severity"]
+        G1["GOV-001<br/>Vanilla-only commit<br/><small>Jira only in vanilla</small>"]
+        G4["GOV-004<br/>Content divergence<br/><small>File differs across folders</small>"]
+        G10["GOV-010<br/>Zero propagation<br/><small>14+ days, only 1 folder</small>"]
+    end
+
+    subgraph HIGH["🟠 HIGH Severity"]
+        G2["GOV-002<br/>Low coverage<br/><small>Coverage < 25%</small>"]
+        G3["GOV-003<br/>Severe delay<br/><small>Merge delay > 30 days</small>"]
+        G6["GOV-006<br/>Single-folder merge<br/><small>Only 1 non-vanilla folder</small>"]
+        G8["GOV-008<br/>Folder regression<br/><small>Health dropped 10+ pts/week</small>"]
+        G9["GOV-009<br/>Mass missing merge<br/><small>5+ Jiras missing from folder</small>"]
+    end
+
+    subgraph MEDIUM["🟡 MEDIUM Severity"]
+        G5["GOV-005<br/>Stale Jira<br/><small>60+ days, incomplete</small>"]
+        G7["GOV-007<br/>Author isolation<br/><small>1 author, 10+ commits</small>"]
+    end
+
+    style CRITICAL fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
+    style HIGH fill:#2a1500,stroke:#FF8B00,stroke-width:2px,color:#f1f3f5
+    style MEDIUM fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
+```
 
 **Rule Configuration (YAML):**
 
@@ -772,20 +942,28 @@ class ExceptionDetectionService:
 
 **Snapshot Strategy:**
 
-```
-Daily Snapshot Job (Celery Beat, runs at 02:00 UTC):
+```mermaid
+graph LR
+    CRON["⏰ Celery Beat<br/>Daily 02:00 UTC"] --> SNAP["📸 Snapshot Job"]
+    SNAP --> M1["Compute<br/>All Metrics"]
+    M1 --> DB["💾 Insert into<br/>governance_snapshots"]
 
-  1. Compute current state of all metrics
-  2. Insert into `governance_snapshots` table with today's date
-  3. Metrics captured:
-     - Total Jiras, Total Commits
-     - Overall Coverage %
-     - Per-folder coverage %
-     - Per-folder health score
-     - Missing merge count
-     - Average delay days
-     - Critical violation count
-     - Content drift count
+    subgraph Metrics["Captured Metrics"]
+        T1["Total Jiras / Commits"]
+        T2["Overall Coverage %"]
+        T3["Per-folder Coverage %"]
+        T4["Per-folder Health Score"]
+        T5["Missing Merge Count"]
+        T6["Avg Delay Days"]
+        T7["Critical Violations"]
+        T8["Content Drift Count"]
+    end
+
+    DB --> Metrics
+
+    style CRON fill:#1a1040,stroke:#6554C0,stroke-width:2px,color:#f1f3f5
+    style SNAP fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style Metrics fill:#1a1d27,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
 ```
 
 **Trend Queries:**
@@ -847,15 +1025,37 @@ class TrendAnalyticsService:
 | `/reports` | Report Builder | Generate/download Excel & PDF reports |
 | `/settings` | Configuration | Repos, folders, rules, users |
 
-**Dashboard Home KPI Cards:**
+**Dashboard Layout:**
 
-```
-┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
-│  Total   │ │  Total   │ │ Coverage │ │ Missing  │ │ Critical │
-│  Jiras   │ │ Commits  │ │    %     │ │ Merges   │ │  Issues  │
-│   247    │ │  1,893   │ │  73.2%   │ │   142    │ │    18    │
-│  +12 ▲   │ │  +89 ▲   │ │ +2.1% ▲ │ │  -8 ▼   │ │  -3 ▼   │
-└──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘
+```mermaid
+graph TB
+    subgraph Dashboard["🖥️ Dashboard Home"]
+        subgraph KPIs["KPI Cards Row"]
+            K1["Total Jiras<br/>247 (+12 ▲)"]
+            K2["Total Commits<br/>1,893 (+89 ▲)"]
+            K3["Coverage %<br/>73.2% (+2.1% ▲)"]
+            K4["Missing Merges<br/>142 (-8 ▼)"]
+            K5["Critical Issues<br/>18 (-3 ▼)"]
+        end
+
+        subgraph Charts["Visualization Row"]
+            C1["📈 Coverage Trend<br/>(Line Chart)"]
+            C2["📊 Folder Health<br/>(Bar Chart)"]
+            C3["🎯 Governance<br/>Score Gauge"]
+        end
+
+        subgraph Tables["Data Row"]
+            T1["🚨 Recent Violations"]
+            T2["📋 Activity Feed"]
+        end
+    end
+
+    KPIs --> Charts --> Tables
+
+    style Dashboard fill:#0d1117,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style KPIs fill:#1a1d27,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
+    style Charts fill:#1a1d27,stroke:#6554C0,stroke-width:1px,color:#f1f3f5
+    style Tables fill:#1a1d27,stroke:#FFAB00,stroke-width:1px,color:#f1f3f5
 ```
 
 **Component Architecture:**
@@ -911,130 +1111,79 @@ src/
 
 **Responsibility:** Generate downloadable Excel workbooks and PDF reports.
 
-**Excel Workbook Structure:**
-
-```
-SENTINEL_Report_2026-06-05.xlsx
-│
-├── Sheet 1: Executive Summary
-│   ├── Overall KPIs (total jiras, commits, coverage, health)
-│   ├── Governance Score (0–100)
-│   ├── Top 5 critical issues
-│   └── Trend sparklines (last 4 weeks)
-│
-├── Sheet 2: Jira Summary
-│   ├── Jira ID, Status, Commit Count, Author Count
-│   ├── First Seen, Last Updated, Coverage %, Delay Days
-│   └── Conditional formatting: RED for <50%, GREEN for 100%
-│
-├── Sheet 3: Detailed Merge Matrix
-│   ├── Jira × Folder grid (✓/✗)
-│   ├── Coverage % column
-│   └── Color-coded cells
-│
-├── Sheet 4: Folder Analysis
-│   ├── Folder Name, Health Score, Coverage Score
-│   ├── Consistency Score, Timeliness Score
-│   ├── Ranking
-│   └── Chart: Folder Health Bar Chart
-│
-├── Sheet 5: Coverage Metrics
-│   ├── Overall coverage stats
-│   ├── Coverage distribution histogram
-│   └── Weekly coverage trend
-│
-├── Sheet 6: Delay Analytics
-│   ├── Per-Jira delay breakdown
-│   ├── Per-folder average delays
-│   └── Delay classification distribution
-│
-├── Sheet 7: Critical Issues
-│   ├── All CRITICAL + HIGH violations
-│   ├── Rule ID, Description, Affected Jira, Affected Folder
-│   └── Recommended action
-│
-├── Sheet 8: Missing Merges
-│   ├── Jira ID, Missing Folder, Days Since Commit
-│   ├── Priority (based on delay + severity)
-│   └── Sorted by priority descending
-│
-└── Sheet 9: Content Verification
-    ├── File Path, Folders Present, Status (IDENTICAL/DIFFERENT/MISSING)
-    ├── Hash values per folder
-    ├── Drift score
-    └── Divergent folders highlighted
-```
-
-**PDF Report Structure:**
-
-```
-SENTINEL_Report_2026-06-05.pdf
-│
-├── Cover Page
-│   ├── SENTINEL logo + title
-│   ├── Repository name
-│   ├── Report date range
-│   └── Generated timestamp
-│
-├── Executive Summary (1 page)
-│   ├── Governance Score gauge
-│   ├── KPI summary boxes
-│   └── Top critical findings
-│
-├── Coverage Analysis (1–2 pages)
-│   ├── Coverage distribution pie chart
-│   ├── Coverage trend line chart
-│   └── Top 10 lowest-coverage Jiras
-│
-├── Folder Health (1 page)
-│   ├── Folder health bar chart
-│   ├── Heatmap table
-│   └── Weakest folders callout
-│
-├── Merge Delay Analysis (1 page)
-│   ├── Delay distribution histogram
-│   ├── Average delay per folder
-│   └── Critical delays table
-│
-├── Content Verification (1 page)
-│   ├── Consistency summary
-│   ├── Drift report
-│   └── Divergent files table
-│
-├── Governance Violations (1–2 pages)
-│   ├── Violation severity breakdown
-│   ├── Top violations table
-│   └── Recommendations
-│
-└── Appendix
-    ├── Methodology notes
-    ├── Rule definitions
-    └── Glossary
-```
-
 **Report Generation Pipeline:**
 
+```mermaid
+graph TD
+    REQ["📥 Request<br/>(API / Scheduled)"]
+    AGG["📊 Data Aggregator<br/><small>Collect all metrics from services</small>"]
+
+    subgraph Builders["Parallel Builders"]
+        XL["📗 Excel Builder<br/>(openpyxl)"]
+        PDF["📕 PDF Builder<br/>(WeasyPrint)"]
+    end
+
+    subgraph Output["Generated Files"]
+        XLSX["📗 .xlsx<br/>9-Sheet Workbook"]
+        PDFF["📕 .pdf<br/>Executive Report"]
+    end
+
+    STORE["💾 Store in<br/>/reports/timestamp/"]
+
+    REQ --> AGG
+    AGG --> XL
+    AGG --> PDF
+    XL --> XLSX
+    PDF --> PDFF
+    XLSX --> STORE
+    PDFF --> STORE
+
+    style REQ fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style AGG fill:#1a1d27,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style Builders fill:#1a1d27,stroke:#6554C0,stroke-width:1px,color:#f1f3f5
+    style Output fill:#1a1d27,stroke:#FF8B00,stroke-width:1px,color:#f1f3f5
+    style STORE fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
 ```
-Request (API / Scheduled)
-        │
-        ▼
-┌───────────────────┐
-│  Data Aggregator   │ ──→ Collect all metrics from services
-└────────┬──────────┘
-         │
-    ┌────┴────┐
-    │         │
-    ▼         ▼
-┌────────┐ ┌────────┐
-│ Excel  │ │  PDF   │
-│Builder │ │Builder │
-└───┬────┘ └───┬────┘
-    │          │
-    ▼          ▼
-┌────────┐ ┌────────┐
-│.xlsx   │ │ .pdf   │ ──→ Store in /reports/<timestamp>/
-│ file   │ │ file   │
-└────────┘ └────────┘
+
+**Excel Workbook — 9 Sheets:**
+
+```mermaid
+graph LR
+    subgraph Workbook["📗 SENTINEL Report Workbook"]
+        S1["1. Executive<br/>Summary"]
+        S2["2. Jira<br/>Summary"]
+        S3["3. Merge<br/>Matrix"]
+        S4["4. Folder<br/>Analysis"]
+        S5["5. Coverage<br/>Metrics"]
+        S6["6. Delay<br/>Analytics"]
+        S7["7. Critical<br/>Issues"]
+        S8["8. Missing<br/>Merges"]
+        S9["9. Content<br/>Verification"]
+    end
+
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9
+
+    style Workbook fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+```
+
+**PDF Report — 7 Sections:**
+
+```mermaid
+graph LR
+    subgraph PDFReport["📕 PDF Executive Report"]
+        P1["Cover<br/>Page"]
+        P2["Executive<br/>Summary"]
+        P3["Coverage<br/>Analysis"]
+        P4["Folder<br/>Health"]
+        P5["Delay<br/>Analysis"]
+        P6["Content<br/>Verification"]
+        P7["Governance<br/>Violations"]
+        P8["Appendix"]
+    end
+
+    P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
+
+    style PDFReport fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
 ```
 
 **Key Service Interface:**
@@ -1055,33 +1204,128 @@ class ReportingService:
 
 ### 6.1 Entity Relationship Diagram
 
-```
-┌──────────────┐     ┌──────────────────┐     ┌──────────────┐
-│ repositories │────<│     commits       │>────│   authors    │
-└──────────────┘     └──────────────────┘     └──────────────┘
-                            │
-                     ┌──────┴───────┐
-                     │              │
-              ┌──────▼──────┐ ┌────▼────────────┐
-              │ commit_jiras│ │  commit_files    │
-              └──────┬──────┘ └────┬────────────┘
-                     │             │
-              ┌──────▼──────┐ ┌───▼─────────────┐
-              │  jira_cache  │ │ file_hashes     │
-              └─────────────┘ └─────────────────┘
+```mermaid
+erDiagram
+    REPOSITORIES ||--o{ COMMITS : contains
+    AUTHORS ||--o{ COMMITS : writes
+    COMMITS ||--o{ COMMIT_FILES : changes
+    COMMITS ||--o{ COMMIT_JIRAS : references
+    COMMIT_JIRAS }o--|| JIRA_CACHE : aggregates_to
+    COMMIT_FILES }o--o{ FILE_HASHES : verifies
 
-┌──────────────────┐     ┌──────────────────┐
-│  governance_     │     │  folder_health_  │
-│  snapshots       │     │  snapshots       │
-└──────────────────┘     └──────────────────┘
+    REPOSITORIES ||--o{ GOVERNANCE_SNAPSHOTS : tracks
+    REPOSITORIES ||--o{ FOLDER_HEALTH_SNAPSHOTS : monitors
+    REPOSITORIES ||--o{ RULE_VIOLATIONS : flags
+    REPOSITORIES ||--o{ REPORTS : generates
 
-┌──────────────────┐     ┌──────────────────┐
-│  rule_violations │     │  audit_log       │
-└──────────────────┘     └──────────────────┘
+    USERS ||--o{ AUDIT_LOG : creates
+    USERS ||--o{ REPORTS : requests
 
-┌──────────────────┐     ┌──────────────────┐
-│  users           │     │  reports         │
-└──────────────────┘     └──────────────────┘
+    REPOSITORIES {
+        uuid id PK
+        varchar name UK
+        varchar url
+        varchar default_branch
+        jsonb folders
+        jsonb jira_patterns
+        varchar sync_mode
+        int sync_interval
+        timestamptz last_synced_at
+    }
+
+    COMMITS {
+        uuid id PK
+        varchar sha
+        uuid repository_id FK
+        uuid author_id FK
+        varchar branch
+        text message
+        timestamptz commit_date
+    }
+
+    AUTHORS {
+        uuid id PK
+        varchar name
+        varchar email UK
+        varchar github_username
+    }
+
+    COMMIT_FILES {
+        uuid id PK
+        uuid commit_id FK
+        varchar file_path
+        varchar folder
+        varchar change_type
+        int additions
+        int deletions
+    }
+
+    COMMIT_JIRAS {
+        uuid id PK
+        uuid commit_id FK
+        varchar jira_id
+    }
+
+    FILE_HASHES {
+        uuid id PK
+        uuid repository_id FK
+        varchar file_path
+        varchar folder
+        varchar sha256_hash
+        bigint file_size
+        varchar last_commit_sha
+    }
+
+    GOVERNANCE_SNAPSHOTS {
+        uuid id PK
+        uuid repository_id FK
+        date snapshot_date
+        int total_jiras
+        decimal overall_coverage_pct
+        decimal governance_score
+    }
+
+    FOLDER_HEALTH_SNAPSHOTS {
+        uuid id PK
+        uuid repository_id FK
+        date snapshot_date
+        varchar folder_name
+        decimal health_score
+    }
+
+    RULE_VIOLATIONS {
+        uuid id PK
+        uuid repository_id FK
+        varchar rule_id
+        varchar severity
+        varchar jira_id
+        text description
+        boolean is_acknowledged
+    }
+
+    USERS {
+        uuid id PK
+        varchar username UK
+        varchar email UK
+        varchar role
+        boolean is_active
+    }
+
+    AUDIT_LOG {
+        uuid id PK
+        uuid user_id FK
+        varchar action
+        jsonb details
+        timestamptz created_at
+    }
+
+    REPORTS {
+        uuid id PK
+        uuid repository_id FK
+        varchar report_type
+        varchar file_path
+        timestamptz generated_at
+    }
 ```
 
 ### 6.2 Table Definitions
@@ -1360,7 +1604,54 @@ CREATE UNIQUE INDEX idx_mv_coverage ON mv_coverage_matrix(jira_id, repository_id
 - **Filterable** with query parameters
 - **Documented** via auto-generated OpenAPI (Swagger UI at `/docs`)
 
-### 7.2 Endpoint Map
+### 7.2 API Route Map
+
+```mermaid
+graph TD
+    subgraph API["FastAPI /api/v1"]
+        subgraph Core["Core Resources"]
+            REPO["/repositories"]
+            COMM["/commits"]
+            JIRA["/jiras"]
+        end
+
+        subgraph Analytics["Analytics Engines"]
+            COV["/coverage"]
+            CONT["/content"]
+            FOLD["/folders"]
+            DEL["/delays"]
+        end
+
+        subgraph Governance["Governance"]
+            VIOL["/violations"]
+            TREND["/trends"]
+            DASH["/dashboard"]
+        end
+
+        subgraph Output["Output"]
+            REP["/reports"]
+            AUTH["/auth"]
+        end
+    end
+
+    REPO --> COMM --> JIRA
+    JIRA --> COV
+    JIRA --> CONT
+    COV --> FOLD
+    FOLD --> VIOL
+    VIOL --> TREND
+    TREND --> DASH
+    DASH --> REP
+    AUTH -.->|"JWT"| API
+
+    style API fill:#0d1117,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style Core fill:#0d2332,stroke:#4C9AFF,stroke-width:1px,color:#f1f3f5
+    style Analytics fill:#0d2018,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
+    style Governance fill:#2a0d0d,stroke:#FF5630,stroke-width:1px,color:#f1f3f5
+    style Output fill:#2a1a00,stroke:#FF8B00,stroke-width:1px,color:#f1f3f5
+```
+
+### 7.3 Endpoint Map
 
 #### Repository Management
 
@@ -1471,7 +1762,7 @@ CREATE UNIQUE INDEX idx_mv_coverage ON mv_coverage_matrix(jira_id, repository_id
 | `POST` | `/api/v1/auth/refresh` | Refresh token |
 | `GET` | `/api/v1/auth/me` | Current user info |
 
-### 7.3 Standard Response Envelope
+### 7.4 Standard Response Envelope
 
 ```json
 {
@@ -1488,7 +1779,7 @@ CREATE UNIQUE INDEX idx_mv_coverage ON mv_coverage_matrix(jira_id, repository_id
 }
 ```
 
-### 7.4 Error Response Format
+### 7.5 Error Response Format
 
 ```json
 {
@@ -1585,59 +1876,50 @@ interface FilterState {
 
 ### 9.1 Ingestion Flow
 
-```
-                    TRIGGER
-                      │
-           ┌──────────┼──────────┐
-           │          │          │
-     ┌─────▼───┐ ┌───▼────┐ ┌──▼──────┐
-     │ Manual  │ │Webhook │ │Scheduled│
-     │ (API)   │ │(GitHub)│ │(Celery) │
-     └─────┬───┘ └───┬────┘ └──┬──────┘
-           │          │         │
-           └──────────┼─────────┘
-                      │
-                      ▼
-            ┌─────────────────┐
-            │  Celery Task:   │
-            │  sync_repository│
-            └────────┬────────┘
-                     │
-         ┌───────────┼───────────┐
-         │           │           │
-         ▼           ▼           ▼
-   ┌──────────┐ ┌─────────┐ ┌──────────┐
-   │ Fetch    │ │ Parse   │ │ Extract  │
-   │ Commits  │ │ Files   │ │ Jira IDs │
-   └────┬─────┘ └────┬────┘ └────┬─────┘
-        │            │           │
-        └────────────┼───────────┘
-                     │
-                     ▼
-            ┌────────────────┐
-            │  Database      │
-            │  Batch Insert  │
-            └────────┬───────┘
-                     │
-                     ▼
-            ┌────────────────┐
-            │  Post-Sync     │
-            │  Tasks Chain   │
-            └────────┬───────┘
-                     │
-       ┌─────────────┼─────────────┐
-       │             │             │
-       ▼             ▼             ▼
- ┌──────────┐ ┌──────────┐ ┌──────────┐
- │ Refresh  │ │ Content  │ │ Evaluate │
- │ Mat.Views│ │ Verify   │ │ Rules    │
- └──────────┘ └──────────┘ └──────────┘
-                                │
-                                ▼
-                        ┌──────────┐
-                        │ Capture  │
-                        │ Snapshot │
-                        └──────────┘
+```mermaid
+graph TD
+    subgraph Triggers["Trigger Sources"]
+        T1["🖱️ Manual<br/>(API Call)"]
+        T2["🔗 Webhook<br/>(GitHub Push)"]
+        T3["⏰ Scheduled<br/>(Celery Beat)"]
+    end
+
+    TASK["📦 Celery Task:<br/>sync_repository"]
+
+    subgraph Processing["Parallel Processing"]
+        P1["Fetch<br/>Commits"]
+        P2["Parse<br/>Files"]
+        P3["Extract<br/>Jira IDs"]
+    end
+
+    DB["💾 Database<br/>Batch Insert"]
+
+    subgraph PostSync["Post-Sync Task Chain"]
+        PS1["🔄 Refresh<br/>Mat. Views"]
+        PS2["🔍 Content<br/>Verify"]
+        PS3["📋 Evaluate<br/>Rules"]
+        PS4["📸 Capture<br/>Snapshot"]
+    end
+
+    T1 --> TASK
+    T2 --> TASK
+    T3 --> TASK
+    TASK --> P1
+    TASK --> P2
+    TASK --> P3
+    P1 --> DB
+    P2 --> DB
+    P3 --> DB
+    DB --> PS1
+    PS1 --> PS2
+    PS2 --> PS3
+    PS3 --> PS4
+
+    style Triggers fill:#1a1d27,stroke:#4C9AFF,stroke-width:1px,color:#f1f3f5
+    style Processing fill:#1a1d27,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
+    style PostSync fill:#1a1d27,stroke:#6554C0,stroke-width:1px,color:#f1f3f5
+    style TASK fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style DB fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
 ```
 
 ### 9.2 Analysis Flow (Post-Ingestion)
@@ -1696,26 +1978,34 @@ def post_sync_pipeline(repo_id: str, affected_jiras: list[str]):
 
 ### 10.2 Role-Based Access Control (RBAC)
 
-| Role | Permissions |
-|------|------------|
-| **Admin** | Full access: manage repos, users, rules, generate reports |
-| **Manager** | Read all data, generate reports, acknowledge violations |
-| **Viewer** | Read-only dashboard and data access |
+```mermaid
+graph TD
+    subgraph Roles["User Roles"]
+        ADMIN["👑 Admin<br/><small>Full Access</small>"]
+        MGR["📊 Manager<br/><small>Read + Reports + Acknowledge</small>"]
+        VIEW["👁️ Viewer<br/><small>Read-Only</small>"]
+    end
 
-**Permission Matrix:**
+    subgraph Permissions["Permission Groups"]
+        P1["View Dashboard"]
+        P2["Search & Filter"]
+        P3["Download Reports"]
+        P4["Generate Reports"]
+        P5["Acknowledge Violations"]
+        P6["Trigger Sync"]
+        P7["Manage Repos & Rules"]
+        P8["Manage Users"]
+        P9["View Audit Log"]
+    end
 
-| Action | Admin | Manager | Viewer |
-|--------|-------|---------|--------|
-| View dashboard | ✓ | ✓ | ✓ |
-| Search/filter data | ✓ | ✓ | ✓ |
-| Download reports | ✓ | ✓ | ✓ |
-| Generate reports | ✓ | ✓ | ✗ |
-| Acknowledge violations | ✓ | ✓ | ✗ |
-| Manage repositories | ✓ | ✗ | ✗ |
-| Manage rules | ✓ | ✗ | ✗ |
-| Manage users | ✓ | ✗ | ✗ |
-| Trigger sync | ✓ | ✓ | ✗ |
-| View audit log | ✓ | ✗ | ✗ |
+    ADMIN --> P1 & P2 & P3 & P4 & P5 & P6 & P7 & P8 & P9
+    MGR --> P1 & P2 & P3 & P4 & P5 & P6
+    VIEW --> P1 & P2 & P3
+
+    style ADMIN fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
+    style MGR fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style VIEW fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+```
 
 ### 10.3 Security Measures
 
@@ -1894,16 +2184,19 @@ backend/templates/reports/
 
 ### 14.1 Testing Pyramid
 
-```
-                    ┌───────────┐
-                    │   E2E     │  ← 10% (Playwright)
-                    │   Tests   │
-                   ┌┴───────────┴┐
-                   │ Integration  │  ← 30% (pytest + TestContainers)
-                   │    Tests     │
-                  ┌┴──────────────┴┐
-                  │   Unit Tests    │  ← 60% (pytest)
-                  └────────────────┘
+```mermaid
+graph TD
+    subgraph Pyramid["Testing Pyramid"]
+        E2E["🔺 E2E Tests<br/>10% — Playwright<br/><small>Full user flows</small>"]
+        INT["🔷 Integration Tests<br/>30% — pytest + TestContainers<br/><small>API endpoints, DB queries</small>"]
+        UNIT["🟩 Unit Tests<br/>60% — pytest<br/><small>Services, utils, models — 90%+ coverage</small>"]
+    end
+
+    E2E --> INT --> UNIT
+
+    style E2E fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
+    style INT fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
+    style UNIT fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
 ```
 
 ### 14.2 Backend Testing
@@ -1990,7 +2283,48 @@ docker compose -f docker-compose.test.yml up --abort-on-container-exit
 
 ## 15. Deployment Architecture
 
-### 15.1 Docker Compose (Production)
+### 15.1 Service Architecture
+
+```mermaid
+graph TB
+    subgraph Docker["Docker Compose — 9 Services"]
+        NG["🌐 Nginx<br/>:80 / :443"]
+
+        subgraph App["Application Services"]
+            FE["Next.js<br/>Frontend<br/>:3000"]
+            BE["FastAPI<br/>Backend<br/>:8000"]
+            CW["Celery<br/>Worker"]
+            CB["Celery<br/>Beat"]
+        end
+
+        subgraph Data["Data Services"]
+            PG[("PostgreSQL<br/>:5432")]
+            RD[("Redis<br/>:6379")]
+        end
+
+        subgraph Monitor["Monitoring"]
+            PR["Prometheus<br/>:9090"]
+            GR["Grafana<br/>:3001"]
+        end
+    end
+
+    NG --> FE
+    NG --> BE
+    BE --> PG
+    BE --> RD
+    CW --> PG
+    CW --> RD
+    CB --> RD
+    PR --> BE
+    GR --> PR
+
+    style Docker fill:#0d1117,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style App fill:#0d2018,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
+    style Data fill:#2a1a00,stroke:#FFAB00,stroke-width:1px,color:#f1f3f5
+    style Monitor fill:#1a1040,stroke:#6554C0,stroke-width:1px,color:#f1f3f5
+```
+
+### 15.2 Docker Compose (Production)
 
 ```yaml
 # docker-compose.yml
@@ -2132,7 +2466,7 @@ volumes:
   grafana_data:
 ```
 
-### 15.2 Backend Dockerfile
+### 15.3 Backend Dockerfile
 
 ```dockerfile
 # backend/Dockerfile
@@ -2160,7 +2494,7 @@ EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
 ```
 
-### 15.3 Frontend Dockerfile
+### 15.4 Frontend Dockerfile
 
 ```dockerfile
 # frontend/Dockerfile
@@ -2191,7 +2525,38 @@ CMD ["node", "server.js"]
 
 ## 16. CI/CD Pipeline
 
-### 16.1 GitHub Actions Workflow
+### 16.1 Pipeline Flow
+
+```mermaid
+graph LR
+    subgraph Trigger["Trigger"]
+        PUSH["Push to<br/>main / develop"]
+        PR["Pull Request<br/>to main"]
+    end
+
+    subgraph Tests["Parallel Tests"]
+        BT["🐍 Backend Tests<br/><small>pytest + ruff + mypy</small>"]
+        FT["⚛️ Frontend Tests<br/><small>npm test + lint + type-check</small>"]
+    end
+
+    subgraph Build["Build & Deploy"]
+        DK["🐳 Docker Build"]
+        IT["🧪 Integration Tests"]
+        DP["🚀 Deploy"]
+    end
+
+    PUSH --> Tests
+    PR --> Tests
+    BT --> DK
+    FT --> DK
+    DK --> IT --> DP
+
+    style Trigger fill:#1a1d27,stroke:#4C9AFF,stroke-width:1px,color:#f1f3f5
+    style Tests fill:#1a1d27,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
+    style Build fill:#1a1d27,stroke:#FF8B00,stroke-width:1px,color:#f1f3f5
+```
+
+### 16.2 GitHub Actions Workflow
 
 ```yaml
 # .github/workflows/ci.yml
@@ -2286,18 +2651,31 @@ jobs:
           docker compose -f docker-compose.test.yml up --abort-on-container-exit
 ```
 
-### 16.2 Branch Strategy
+### 16.3 Branch Strategy
 
-```
-main          ──────────────────────────── production-ready
-  │
-  ├── develop ──────────────────────────── integration branch
-  │     │
-  │     ├── feature/module-1-collector ── feature branches
-  │     ├── feature/module-4-content
-  │     └── fix/coverage-calc-rounding
-  │
-  └── release/v1.0.0 ──────────────────── release candidates
+```mermaid
+gitGraph
+    commit id: "init"
+    branch develop
+    commit id: "setup"
+    branch feature/module-1-collector
+    commit id: "collector-impl"
+    commit id: "collector-tests"
+    checkout develop
+    merge feature/module-1-collector
+    branch feature/module-4-content
+    commit id: "content-impl"
+    checkout develop
+    merge feature/module-4-content
+    checkout main
+    merge develop tag: "v1.0.0"
+    checkout develop
+    branch fix/coverage-rounding
+    commit id: "hotfix"
+    checkout develop
+    merge fix/coverage-rounding
+    checkout main
+    merge develop tag: "v1.0.1"
 ```
 
 ---
@@ -2751,7 +3129,116 @@ REPORT_RETENTION_DAYS=30
 
 ---
 
-## 20. Performance Targets
+## 20. Commercial Product Goal
+
+### 20.1 Product Identity
+
+SENTINEL must be positioned as:
+
+> **"Git Governance, Merge Intelligence & Release Readiness Platform"**
+
+NOT as:
+
+> ~~"GitHub Commit Reporting Tool"~~
+
+Every design decision, UI label, API naming, and documentation choice must reinforce the **governance platform** identity.
+
+### 20.2 Competitive Moat
+
+```mermaid
+graph TD
+    subgraph Moat["SENTINEL Competitive Advantages"]
+        M1["🔍 Content Verification<br/><small>SHA256 hash comparison —<br/>no other free tool does this</small>"]
+        M2["📊 Governance Scoring<br/><small>Composite 0-100 score<br/>with weighted metrics</small>"]
+        M3["🚨 Rule-Based Detection<br/><small>10+ configurable rules<br/>no AI, fully deterministic</small>"]
+        M4["📈 Trend Analytics<br/><small>Daily snapshots, weekly/monthly<br/>trend visualization</small>"]
+        M5["📄 Executive Reporting<br/><small>9-sheet Excel + PDF<br/>management-ready</small>"]
+        M6["🔓 100% Free & OSS<br/><small>MIT licensed, no vendor<br/>lock-in, self-hosted</small>"]
+    end
+
+    style Moat fill:#0d1117,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style M1 fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
+    style M2 fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style M3 fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
+    style M4 fill:#1a1040,stroke:#6554C0,stroke-width:2px,color:#f1f3f5
+    style M5 fill:#2a1500,stroke:#FF8B00,stroke-width:2px,color:#f1f3f5
+    style M6 fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+```
+
+### 20.3 Value Ladder: Free → Enterprise
+
+```mermaid
+graph BT
+    subgraph Tiers["SENTINEL Product Tiers"]
+        FREE["🟢 Community Edition<br/><b>FREE FOREVER</b><br/><small>• Single repo<br/>• All 10 modules<br/>• Local deployment<br/>• Full API access<br/>• Excel + PDF exports</small>"]
+        PRO["🔵 Pro Edition (Future)<br/><b>SELF-HOSTED</b><br/><small>• Multi-repo support<br/>• Custom rule builder UI<br/>• Scheduled report delivery<br/>• SSO / LDAP integration<br/>• Priority support</small>"]
+        ENT["🟣 Enterprise (Future)<br/><b>MANAGED / ON-PREM</b><br/><small>• Multi-tenant<br/>• White-label branding<br/>• API rate limit tiers<br/>• SLA guarantees<br/>• Dedicated support</small>"]
+    end
+
+    FREE --> PRO --> ENT
+
+    style FREE fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style PRO fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style ENT fill:#1a1040,stroke:#6554C0,stroke-width:2px,color:#f1f3f5
+```
+
+### 20.4 Architecture Decisions Supporting Commercialization
+
+| Decision | Commercial Benefit |
+|----------|-------------------|
+| **Repository Pattern** | Easy to swap PostgreSQL for cloud-managed DB in SaaS tier |
+| **Tenant-aware schema** | `repository_id` on every table = multi-tenancy ready |
+| **JWT + RBAC** | Role system extensible to org-level permissions |
+| **YAML-based rules** | Customers can self-serve rule configuration without code changes |
+| **OpenAPI auto-docs** | Enables API-first integrations and third-party tooling |
+| **Docker Compose** | One-command deployment for on-prem enterprise customers |
+| **Celery task queues** | Horizontally scalable — add workers as customer load grows |
+| **Redis caching** | Performance at scale without re-architecture |
+| **Structured logging** | Enterprise-grade observability from day one |
+| **MIT License** | No barriers to adoption; commercial use permitted |
+
+### 20.5 Roadmap Alignment
+
+```mermaid
+timeline
+    title SENTINEL Product Roadmap
+    section Phase 1 — Foundation
+        Core Platform : All 10 modules functional
+                      : PostgreSQL + Redis + FastAPI
+                      : Next.js dashboard live
+                      : Docker deployment working
+    section Phase 2 — Polish
+        Executive Reports : 9-sheet Excel generation
+                         : PDF executive reports
+                         : Trend charts + analytics
+                         : Governance scoring
+    section Phase 3 — Scale
+        Multi-Repo : Support multiple repositories
+                   : Cross-repo governance views
+                   : Comparative analytics
+                   : Webhook auto-sync
+    section Phase 4 — Commercialize
+        Enterprise Features : Multi-tenancy
+                            : White-label UI
+                            : SSO / LDAP
+                            : Managed hosting option
+```
+
+### 20.6 Naming & Branding Guidelines
+
+| Element | Guideline |
+|---------|-----------|
+| **Product Name** | Always "SENTINEL" in all caps |
+| **Tagline** | "Git Governance, Merge Intelligence & Release Readiness" |
+| **Module Names** | Use professional names: "Content Verification Engine", not "File Checker" |
+| **UI Language** | "Governance Score", "Merge Intelligence", "Release Readiness" |
+| **Reports** | "Executive Report", "Governance Analytics", never "Commit Report" |
+| **Violations** | "Governance Violations", not "Errors" or "Problems" |
+| **Health Scores** | Use letter grades (A–F) alongside percentages for executive appeal |
+
+---
+
+## 21. Performance Targets
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
@@ -2766,7 +3253,7 @@ REPORT_RETENTION_DAYS=30
 | Concurrent users | 50+ | Without degradation |
 | Database query | < 100ms | p95, using mat. views |
 
-### 20.1 Performance Optimizations
+### 21.1 Performance Optimizations
 
 | Optimization | Where | Impact |
 |-------------|-------|--------|
@@ -2783,10 +3270,10 @@ REPORT_RETENTION_DAYS=30
 
 ---
 
-## 21. Appendix: Decision Log
+## 22. Appendix: Decision Log
 
 | # | Decision | Alternatives Considered | Rationale |
-|---|----------|------------------------|-----------|
+|---|----------|------------------------|-----------| 
 | D1 | PostgreSQL over SQLite | SQLite, MySQL | Need concurrent writes, JSONB, window functions, materialized views |
 | D2 | FastAPI over Django | Django, Flask | Async native, auto-docs, Pydantic, lighter for API-only backend |
 | D3 | Celery over APScheduler | APScheduler, Dramatiq, Huey | Most mature, supports chains/groups, Flower monitoring, horizontal scaling |
@@ -2808,35 +3295,55 @@ REPORT_RETENTION_DAYS=30
 
 The composite governance score provides a single 0–100 metric for repository health.
 
+```mermaid
+graph LR
+    subgraph Inputs["Score Inputs"]
+        COV["Coverage<br/>Weight: 0.35"]
+        DEL["Delay Score<br/>Weight: 0.25"]
+        CON["Consistency<br/>Weight: 0.25"]
+        MIS["Missing Merges<br/>Weight: 0.15"]
+    end
+
+    CALC["Governance<br/>Score<br/>(0-100)"]
+
+    subgraph Grades["Grade Output"]
+        A["A (90-100)<br/>Excellent"]
+        B["B (75-89)<br/>Good"]
+        C["C (60-74)<br/>Needs Work"]
+        D["D (40-59)<br/>Poor"]
+        F["F (0-39)<br/>Critical"]
+    end
+
+    COV --> CALC
+    DEL --> CALC
+    CON --> CALC
+    MIS --> CALC
+    CALC --> A & B & C & D & F
+
+    style Inputs fill:#1a1d27,stroke:#4C9AFF,stroke-width:1px,color:#f1f3f5
+    style CALC fill:#0d2332,stroke:#4C9AFF,stroke-width:2px,color:#f1f3f5
+    style A fill:#0d2018,stroke:#36B37E,stroke-width:2px,color:#f1f3f5
+    style B fill:#0d2018,stroke:#36B37E,stroke-width:1px,color:#f1f3f5
+    style C fill:#2a1a00,stroke:#FFAB00,stroke-width:2px,color:#f1f3f5
+    style D fill:#2a1500,stroke:#FF8B00,stroke-width:2px,color:#f1f3f5
+    style F fill:#2a0d0d,stroke:#FF5630,stroke-width:2px,color:#f1f3f5
+```
+
+**Formula:**
+
 ```
 Governance Score = (
-    coverage_weight    × overall_coverage_pct +
-    delay_weight       × delay_score +
-    consistency_weight × consistency_score +
-    missing_weight     × missing_merge_score
+    0.35 × overall_coverage_pct +
+    0.25 × max(0, 100 - (avg_delay_days × 2.5)) +
+    0.25 × (identical_files / total_verified_files × 100) +
+    0.15 × max(0, 100 - (missing_merge_count × 0.5))
 )
-
-Where:
-  coverage_weight    = 0.35
-  delay_weight       = 0.25
-  consistency_weight = 0.25
-  missing_weight     = 0.15
-
-  delay_score        = max(0, 100 - (avg_delay_days × 2.5))
-  consistency_score  = (identical_files / total_verified_files) × 100
-  missing_merge_score = max(0, 100 - (missing_merge_count × 0.5))
-
-Classification:
-  90–100 → A (Excellent)
-  75–89  → B (Good)
-  60–74  → C (Needs Improvement)
-  40–59  → D (Poor)
-  0–39   → F (Critical)
 ```
 
 ---
 
-> **Document Version:** 1.0  
-> **Last Updated:** 2026-06-05  
+> **Document Version:** 2.0  
+> **Last Updated:** 2026-06-06  
 > **Author:** SENTINEL Engineering  
+> **Product:** Git Governance, Merge Intelligence & Release Readiness Platform  
 > **Status:** DRAFT — Pending team review
