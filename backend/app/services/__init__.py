@@ -3,6 +3,7 @@ from app.services.jira_aggregation import JiraAggregationService
 from app.services.folder_coverage import FolderCoverageService
 from app.services.content_verification import ContentVerificationService
 from app.services.merge_delay import MergeDelayService
+from app.services.folder_health import FolderHealthService
 
 __all__ = [
     "CommitCollectorService",
@@ -10,4 +11,5 @@ __all__ = [
     "FolderCoverageService",
     "ContentVerificationService",
     "MergeDelayService",
+    "FolderHealthService",
 ]
