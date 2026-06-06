@@ -5,6 +5,7 @@ from app.services.content_verification import ContentVerificationService
 from app.services.merge_delay import MergeDelayService
 from app.services.folder_health import FolderHealthService
 from app.services.exception_detection import ExceptionDetectionService
+from app.services.trend_analytics import TrendAnalyticsService
 
 __all__ = [
     "CommitCollectorService",
@@ -14,4 +15,5 @@ __all__ = [
     "MergeDelayService",
     "FolderHealthService",
     "ExceptionDetectionService",
+    "TrendAnalyticsService",
 ]

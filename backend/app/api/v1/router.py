@@ -8,6 +8,7 @@ from app.api.v1.content import router as content_router
 from app.api.v1.delays import router as delays_router
 from app.api.v1.folders import router as folders_router
 from app.api.v1.violations import router as violations_router
+from app.api.v1.trends import router as trends_router
 
 api_router = APIRouter()
 
@@ -20,3 +21,4 @@ api_router.include_router(content_router, prefix="/content", tags=["Content Veri
 api_router.include_router(delays_router, prefix="/delays", tags=["Merge Delay Analytics"])
 api_router.include_router(folders_router, prefix="/folders", tags=["Folder Health"])
 api_router.include_router(violations_router, prefix="/violations", tags=["Exception Detection"])
+api_router.include_router(trends_router, prefix="/trends", tags=["Historical Trends"])
