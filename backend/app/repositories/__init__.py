@@ -3,6 +3,8 @@ from app.repositories.base import BaseRepository
 from app.repositories.commit_repo import commit_repo
 from app.repositories.violation_repo import violation_repo
 from app.repositories.snapshot_repo import snapshot_repo
+from app.repositories.user_repo import user_repo
+from app.repositories.audit_repo import audit_repo
 
 # Generic repositories for simple tables
 repository_repo = BaseRepository(Repository)
@@ -13,4 +15,6 @@ __all__ = [
     "repository_repo",
     "violation_repo",
     "snapshot_repo",
+    "user_repo",
+    "audit_repo",
 ]

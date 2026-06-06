@@ -41,6 +41,34 @@ from app.api.v1 import api_router
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
+@app.on_event("startup")
+async def startup_event():
+    """Seed default administrator credentials if they do not exist."""
+    from app.core.database import AsyncSessionLocal
+    from app.core.security import get_password_hash
+    from app.models.user import User
+    from app.repositories.user_repo import user_repo
+
+    async with AsyncSessionLocal() as db:
+        admin = await user_repo.get_by_username(db, settings.ADMIN_USERNAME)
+        if not admin:
+            logger.info("Admin user not found in database. Seeding initial admin account...")
+            try:
+                new_admin = User(
+                    username=settings.ADMIN_USERNAME,
+                    email="admin@sentinel.local",
+                    password_hash=get_password_hash(settings.ADMIN_PASSWORD),
+                    role="admin",
+                    is_active=True,
+                )
+                db.add(new_admin)
+                await db.commit()
+                logger.info("Initial admin account seeded successfully.")
+            except Exception as e:
+                logger.error("Failed to seed initial admin account", error=str(e))
+                await db.rollback()
+
+
 
 # Global middleware to track request processing time
 @app.middleware("http")

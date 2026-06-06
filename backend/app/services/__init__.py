@@ -6,6 +6,7 @@ from app.services.merge_delay import MergeDelayService
 from app.services.folder_health import FolderHealthService
 from app.services.exception_detection import ExceptionDetectionService
 from app.services.trend_analytics import TrendAnalyticsService
+from app.services.governance_score import GovernanceScoreService
 
 __all__ = [
     "CommitCollectorService",
@@ -16,4 +17,5 @@ __all__ = [
     "FolderHealthService",
     "ExceptionDetectionService",
     "TrendAnalyticsService",
+    "GovernanceScoreService",
 ]

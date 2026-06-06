@@ -22,7 +22,10 @@ def sync_repository_task(repository_id: str) -> Dict[str, Any]:
                 logger.error("Sync background task failed", repo_id=repository_id, error=str(result.error))
                 raise Exception(result.error.message)
             
-            # Post-sync hooks go here in future steps (materialized views, health scoring, rules, etc.)
+            # Post-sync hooks orchestrate view refreshes, file verification, rules evaluation, and snapshots
+            from app.tasks.pipeline import trigger_repository_analysis_task
+            trigger_repository_analysis_task.delay(repository_id)
+
             logger.info("Sync background task completed successfully", repo_id=repository_id, result=result.value)
             return result.value
 
