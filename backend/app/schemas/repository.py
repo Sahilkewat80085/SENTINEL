@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
 import uuid
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, ConfigDict
+
 
 
 class RepositoryBase(BaseModel):
@@ -34,12 +35,9 @@ class RepositoryUpdate(BaseModel):
 
 
 class RepositoryResponse(RepositoryBase):
+    model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     last_synced_at: Optional[datetime] = None
     last_sync_sha: Optional[str] = None
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
-        # In pydantic v2, from_attributes replaces from_orm

@@ -1,30 +1,27 @@
 from datetime import datetime
 from typing import List, Optional
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class AuthorResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     name: str
     email: str
     github_username: Optional[str] = None
 
-    class Config:
-        from_attributes = True
-
 
 class CommitFileResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     file_path: str
     folder: Optional[str] = None
     change_type: str
     additions: int
     deletions: int
 
-    class Config:
-        from_attributes = True
-
 
 class CommitResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     sha: str
     repository_id: uuid.UUID
@@ -33,9 +30,6 @@ class CommitResponse(BaseModel):
     commit_date: datetime
     ingested_at: datetime
     author: AuthorResponse
-
-    class Config:
-        from_attributes = True
 
 
 class CommitDetailResponse(CommitResponse):
