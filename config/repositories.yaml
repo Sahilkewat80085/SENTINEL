@@ -1,0 +1,21 @@
+# ============================================================
+# SENTINEL — Registered Repository Auditing Configurations
+# ============================================================
+
+repositories:
+  - name: "sentinel-mock-demo"
+    url: "mock://sentinel-mock-repository"
+    default_branch: "main"
+    folders:
+      - "vanilla"
+      - "MET"
+      - "AMO"
+      - "IOM"
+      - "JCF"
+      - "MOD"
+      - "WMP"
+      - "YATH"
+    jira_patterns:
+      - "[A-Z]{2,10}-\\d{3,6}"
+    sync_mode: "api"
+    sync_interval: 30

@@ -16,7 +16,7 @@ celery_app.conf.update(
     timezone="UTC",
     enable_utc=True,
     # Auto-discover tasks from the tasks package (Step 3 onwards)
-    imports=["app.tasks"] if hasattr(settings, "TASKS") else [],
+    imports=["app.tasks"],
     # Task time limits
     task_time_limit=1800,  # 30 minutes max execution time
     task_soft_time_limit=1500,
