@@ -1,0 +1,38 @@
+rules:
+  GOV-001:
+    name: "Vanilla-only commit"
+    enabled: true
+  GOV-002:
+    name: "Low coverage"
+    enabled: true
+    threshold_pct: 25.0
+  GOV-003:
+    name: "Severe delay"
+    enabled: true
+    threshold_days: 30.0
+  GOV-004:
+    name: "Content drift"
+    enabled: true
+  GOV-005:
+    name: "Stale Jira"
+    enabled: true
+    threshold_days: 60.0
+  GOV-006:
+    name: "Single folder"
+    enabled: true
+  GOV-007:
+    name: "Author isolation"
+    enabled: true
+    threshold_commits: 10
+  GOV-008:
+    name: "Folder regression"
+    enabled: true
+    threshold_points: 10.0
+  GOV-009:
+    name: "Mass missing"
+    enabled: true
+    threshold_jiras: 5
+  GOV-010:
+    name: "Zero propagation"
+    enabled: true
+    threshold_days: 14.0
