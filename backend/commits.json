@@ -1,0 +1,1630 @@
+[
+  {
+    "sha": "fea2f165f924a719ae70692a100cb0b7a54a7a96",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-07T17:01:28+05:30",
+    "message": "style: replace neon glows and colored cards with clean flat slate styling for a professional enterprise look",
+    "files": [
+      {
+        "file_path": "frontend/src/app/globals.css",
+        "change_type": "MODIFIED",
+        "additions": 24,
+        "deletions": 25
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/GovernanceGauge.tsx",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/KPICard.tsx",
+        "change_type": "MODIFIED",
+        "additions": 11,
+        "deletions": 11
+      },
+      {
+        "file_path": "frontend/src/components/layout/Header.tsx",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "file_path": "frontend/src/components/layout/Sidebar.tsx",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 2
+      },
+      {
+        "file_path": "frontend/src/components/ui/Card.tsx",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 2
+      }
+    ]
+  },
+  {
+    "sha": "1740fc0380286f0ba61b6561127a0acc0704acc8",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-07T16:47:58+05:30",
+    "message": "feat: bypass login and authentication requirements for public dashboard access, and fix postgres JSONB casting / duplicate index issues",
+    "files": [
+      {
+        "file_path": "backend/app/api/deps.py",
+        "change_type": "MODIFIED",
+        "additions": 8,
+        "deletions": 18
+      },
+      {
+        "file_path": "backend/migrations/versions/001_initial_schema.py",
+        "change_type": "MODIFIED",
+        "additions": 3,
+        "deletions": 3
+      },
+      {
+        "file_path": "db/init.sql",
+        "change_type": "MODIFIED",
+        "additions": 3,
+        "deletions": 3
+      },
+      {
+        "file_path": "frontend/src/components/layout/AppLayout.tsx",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 24
+      },
+      {
+        "file_path": "frontend/src/components/layout/Sidebar.tsx",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 22
+      },
+      {
+        "file_path": "frontend/src/stores/dashboardStore.ts",
+        "change_type": "MODIFIED",
+        "additions": 11,
+        "deletions": 44
+      }
+    ]
+  },
+  {
+    "sha": "e301903f818b5de52ee6d3a2a290e34d15053fee",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-07T15:25:42+05:30",
+    "message": "feat: implement reporting engine, frontend type fixes, docker and monitoring setups",
+    "files": [
+      {
+        "file_path": ".github/workflows/backend.yml",
+        "change_type": "MODIFIED",
+        "additions": 73,
+        "deletions": 0
+      },
+      {
+        "file_path": ".github/workflows/frontend.yml",
+        "change_type": "MODIFIED",
+        "additions": 42,
+        "deletions": 0
+      },
+      {
+        "file_path": "README.md",
+        "change_type": "MODIFIED",
+        "additions": 114,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/Dockerfile",
+        "change_type": "MODIFIED",
+        "additions": 30,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/reports.py",
+        "change_type": "MODIFIED",
+        "additions": 160,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/core/seed.py",
+        "change_type": "MODIFIED",
+        "additions": 253,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/commit_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 7,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/report_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 27,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/report.py",
+        "change_type": "MODIFIED",
+        "additions": 59,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/reporting/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 5,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/reporting/chart_generator.py",
+        "change_type": "MODIFIED",
+        "additions": 111,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/reporting/excel_builder.py",
+        "change_type": "MODIFIED",
+        "additions": 4,
+        "deletions": 4
+      },
+      {
+        "file_path": "backend/app/services/reporting/pdf_builder.py",
+        "change_type": "MODIFIED",
+        "additions": 4,
+        "deletions": 4
+      },
+      {
+        "file_path": "backend/app/services/trend_analytics.py",
+        "change_type": "MODIFIED",
+        "additions": 14,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 3,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/reports.py",
+        "change_type": "MODIFIED",
+        "additions": 96,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_reporting.py",
+        "change_type": "MODIFIED",
+        "additions": 190,
+        "deletions": 0
+      },
+      {
+        "file_path": "docker-compose.yml",
+        "change_type": "MODIFIED",
+        "additions": 107,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/Dockerfile",
+        "change_type": "MODIFIED",
+        "additions": 43,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/next.config.ts",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "file_path": "frontend/src/app/commits/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/content/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "file_path": "frontend/src/app/folders/%5Bname%5D/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 2
+      },
+      {
+        "file_path": "frontend/src/app/folders/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "file_path": "frontend/src/app/jiras/[id]/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "file_path": "frontend/src/app/jiras/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "file_path": "frontend/src/app/login/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 14,
+        "deletions": 2
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/CoverageChart.tsx",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/GovernanceGauge.tsx",
+        "change_type": "MODIFIED",
+        "additions": 3,
+        "deletions": 1
+      },
+      {
+        "file_path": "frontend/src/components/layout/Header.tsx",
+        "change_type": "MODIFIED",
+        "additions": 6,
+        "deletions": 2
+      },
+      {
+        "file_path": "monitoring/grafana_dashboard.json",
+        "change_type": "MODIFIED",
+        "additions": 194,
+        "deletions": 0
+      },
+      {
+        "file_path": "monitoring/prometheus.yml",
+        "change_type": "MODIFIED",
+        "additions": 13,
+        "deletions": 0
+      },
+      {
+        "file_path": "nginx/nginx.conf",
+        "change_type": "MODIFIED",
+        "additions": 61,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "a6b9bef6867f0db17b8c36cb231cc372c115075e",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-07T00:23:33+05:30",
+    "message": "feat: initialize Sentinel frontend dashboard with core layouts, UI components, and coverage tracking features",
+    "files": [
+      {
+        "file_path": "backend/app/services/reporting/excel_builder.py",
+        "change_type": "MODIFIED",
+        "additions": 605,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/reporting/pdf_builder.py",
+        "change_type": "MODIFIED",
+        "additions": 500,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/.gitignore",
+        "change_type": "MODIFIED",
+        "additions": 41,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/README.md",
+        "change_type": "MODIFIED",
+        "additions": 36,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/eslint.config.mjs",
+        "change_type": "MODIFIED",
+        "additions": 18,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/next.config.ts",
+        "change_type": "MODIFIED",
+        "additions": 7,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/package-lock.json",
+        "change_type": "MODIFIED",
+        "additions": 6678,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/package.json",
+        "change_type": "MODIFIED",
+        "additions": 36,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/postcss.config.mjs",
+        "change_type": "MODIFIED",
+        "additions": 7,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/public/file.svg",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/public/globe.svg",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/public/next.svg",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/public/vercel.svg",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/public/window.svg",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/commits/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 290,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/content/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 228,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/coverage/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 129,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/favicon.ico",
+        "change_type": "MODIFIED",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/folders/%5Bname%5D/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 268,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/folders/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 199,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/globals.css",
+        "change_type": "MODIFIED",
+        "additions": 84,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/jiras/[id]/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 176,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/jiras/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 194,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/layout.tsx",
+        "change_type": "MODIFIED",
+        "additions": 25,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/login/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 132,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 135,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/reports/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 247,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/settings/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 381,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/trends/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 267,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/app/violations/page.tsx",
+        "change_type": "MODIFIED",
+        "additions": 432,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/ActivityFeed.tsx",
+        "change_type": "MODIFIED",
+        "additions": 108,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/CoverageChart.tsx",
+        "change_type": "MODIFIED",
+        "additions": 112,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/FolderHeatmap.tsx",
+        "change_type": "MODIFIED",
+        "additions": 132,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/GovernanceGauge.tsx",
+        "change_type": "MODIFIED",
+        "additions": 130,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/KPICard.tsx",
+        "change_type": "MODIFIED",
+        "additions": 99,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/dashboard/RecentViolations.tsx",
+        "change_type": "MODIFIED",
+        "additions": 153,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/data/CoverageMatrix.tsx",
+        "change_type": "MODIFIED",
+        "additions": 133,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/data/DataTable.tsx",
+        "change_type": "MODIFIED",
+        "additions": 99,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/data/FilterBar.tsx",
+        "change_type": "MODIFIED",
+        "additions": 15,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/data/SearchInput.tsx",
+        "change_type": "MODIFIED",
+        "additions": 34,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/data/TimelineView.tsx",
+        "change_type": "MODIFIED",
+        "additions": 92,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/layout/AppLayout.tsx",
+        "change_type": "MODIFIED",
+        "additions": 71,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/layout/Header.tsx",
+        "change_type": "MODIFIED",
+        "additions": 134,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/layout/PageContainer.tsx",
+        "change_type": "MODIFIED",
+        "additions": 78,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/layout/Sidebar.tsx",
+        "change_type": "MODIFIED",
+        "additions": 166,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/ui/Badge.tsx",
+        "change_type": "MODIFIED",
+        "additions": 45,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/ui/Card.tsx",
+        "change_type": "MODIFIED",
+        "additions": 75,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/ui/Modal.tsx",
+        "change_type": "MODIFIED",
+        "additions": 80,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/ui/Progress.tsx",
+        "change_type": "MODIFIED",
+        "additions": 69,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/ui/Skeleton.tsx",
+        "change_type": "MODIFIED",
+        "additions": 63,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/components/ui/StatusIndicator.tsx",
+        "change_type": "MODIFIED",
+        "additions": 79,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/stores/dashboardStore.ts",
+        "change_type": "MODIFIED",
+        "additions": 83,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/src/stores/filterStore.ts",
+        "change_type": "MODIFIED",
+        "additions": 48,
+        "deletions": 0
+      },
+      {
+        "file_path": "frontend/tsconfig.json",
+        "change_type": "MODIFIED",
+        "additions": 34,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "7eea7552b7d532560eb15c1660ad260c7ad9f7e1",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T23:35:49+05:30",
+    "message": "feat: Implement Step 11 - Dashboard API, composite Governance Score, and JWT Authentication",
+    "files": [
+      {
+        "file_path": "backend/app/api/deps.py",
+        "change_type": "MODIFIED",
+        "additions": 30,
+        "deletions": 15
+      },
+      {
+        "file_path": "backend/app/api/v1/auth.py",
+        "change_type": "MODIFIED",
+        "additions": 70,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/dashboard.py",
+        "change_type": "MODIFIED",
+        "additions": 167,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 4,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/core/security.py",
+        "change_type": "MODIFIED",
+        "additions": 41,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/main.py",
+        "change_type": "MODIFIED",
+        "additions": 28,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 4,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/audit_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 41,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/user_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 29,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/auth.py",
+        "change_type": "MODIFIED",
+        "additions": 38,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/dashboard.py",
+        "change_type": "MODIFIED",
+        "additions": 51,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/governance_score.py",
+        "change_type": "MODIFIED",
+        "additions": 107,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 7,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/analysis.py",
+        "change_type": "MODIFIED",
+        "additions": 49,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/ingestion.py",
+        "change_type": "MODIFIED",
+        "additions": 4,
+        "deletions": 1
+      },
+      {
+        "file_path": "backend/app/tasks/maintenance.py",
+        "change_type": "MODIFIED",
+        "additions": 49,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/pipeline.py",
+        "change_type": "MODIFIED",
+        "additions": 26,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_dashboard.py",
+        "change_type": "MODIFIED",
+        "additions": 94,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "a6f5895e2b783c0f4a195613b21b99ff1543a1a7",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T23:30:01+05:30",
+    "message": "feat(trends): step 10 - implement historical daily snapshots and trends analytics with tests",
+    "files": [
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/trends.py",
+        "change_type": "MODIFIED",
+        "additions": 108,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/snapshot_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 116,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/trend.py",
+        "change_type": "MODIFIED",
+        "additions": 39,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/trend_analytics.py",
+        "change_type": "MODIFIED",
+        "additions": 190,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 3,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/snapshots.py",
+        "change_type": "MODIFIED",
+        "additions": 59,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_trends.py",
+        "change_type": "MODIFIED",
+        "additions": 134,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "e8b46c7c476244c0f99a035a0abfd8c367305706",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T23:21:10+05:30",
+    "message": "feat(exception-detection): step 9 - implement pluggable rule framework and 10 governance rules with tests",
+    "files": [
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/violations.py",
+        "change_type": "MODIFIED",
+        "additions": 85,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/violation_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 57,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 10,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/base.py",
+        "change_type": "MODIFIED",
+        "additions": 71,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_001_vanilla_only.py",
+        "change_type": "MODIFIED",
+        "additions": 64,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_002_low_coverage.py",
+        "change_type": "MODIFIED",
+        "additions": 54,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_003_severe_delay.py",
+        "change_type": "MODIFIED",
+        "additions": 66,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_004_content_drift.py",
+        "change_type": "MODIFIED",
+        "additions": 51,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_005_stale_jira.py",
+        "change_type": "MODIFIED",
+        "additions": 61,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_006_single_folder.py",
+        "change_type": "MODIFIED",
+        "additions": 65,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_007_author_isolation.py",
+        "change_type": "MODIFIED",
+        "additions": 54,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_008_folder_regression.py",
+        "change_type": "MODIFIED",
+        "additions": 57,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_009_mass_missing.py",
+        "change_type": "MODIFIED",
+        "additions": 59,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/gov_010_zero_propagation.py",
+        "change_type": "MODIFIED",
+        "additions": 62,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/rules/registry.py",
+        "change_type": "MODIFIED",
+        "additions": 61,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/violation.py",
+        "change_type": "MODIFIED",
+        "additions": 48,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/exception_detection.py",
+        "change_type": "MODIFIED",
+        "additions": 274,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_violation.py",
+        "change_type": "MODIFIED",
+        "additions": 285,
+        "deletions": 0
+      },
+      {
+        "file_path": "config/rules.yaml",
+        "change_type": "MODIFIED",
+        "additions": 38,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "199c478498932d415b8fe0f9dce9fe7fba39978c",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T23:12:05+05:30",
+    "message": "feat(folder-health): step 8 - implement folder health engine, ranking and heatmap routes, and tests",
+    "files": [
+      {
+        "file_path": "backend/app/api/v1/folders.py",
+        "change_type": "MODIFIED",
+        "additions": 84,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/folder.py",
+        "change_type": "MODIFIED",
+        "additions": 37,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/folder_health.py",
+        "change_type": "MODIFIED",
+        "additions": 223,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_folder.py",
+        "change_type": "MODIFIED",
+        "additions": 211,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "4f46e1d63391d87046fcc390292992d7a0b4b36b",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T23:07:49+05:30",
+    "message": "feat(delay-analytics): step 7 - implement merge delay engine, ranking routes, and tests",
+    "files": [
+      {
+        "file_path": "backend/app/api/v1/delays.py",
+        "change_type": "MODIFIED",
+        "additions": 40,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/delay.py",
+        "change_type": "MODIFIED",
+        "additions": 39,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/merge_delay.py",
+        "change_type": "MODIFIED",
+        "additions": 164,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_delay.py",
+        "change_type": "MODIFIED",
+        "additions": 21,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "37da3755bc8a7c1804e3ddad1f63fa65b149c5a6",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T23:05:07+05:30",
+    "message": "feat(drift-detection): step 6 - implement content verification engine, drift report schema, API routes, and tests",
+    "files": [
+      {
+        "file_path": "backend/app/api/v1/content.py",
+        "change_type": "MODIFIED",
+        "additions": 54,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/file_hash_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 115,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/content.py",
+        "change_type": "MODIFIED",
+        "additions": 23,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/content_verification.py",
+        "change_type": "MODIFIED",
+        "additions": 156,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_content.py",
+        "change_type": "MODIFIED",
+        "additions": 23,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "83cf0cc8136db785b8b79478fe5c0e6f514995d3",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T23:01:56+05:30",
+    "message": "feat(coverage): step 5 - implement folder coverage engine, matrix schema, API routes, and tests",
+    "files": [
+      {
+        "file_path": "backend/app/api/v1/coverage.py",
+        "change_type": "MODIFIED",
+        "additions": 54,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/folder_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 82,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/coverage.py",
+        "change_type": "MODIFIED",
+        "additions": 49,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/folder_coverage.py",
+        "change_type": "MODIFIED",
+        "additions": 152,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_coverage.py",
+        "change_type": "MODIFIED",
+        "additions": 44,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "4299ddd53fa9c1763fa0ad21cbbb7374c5ad79a7",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T23:00:36+05:30",
+    "message": "feat(jira-aggregation): step 4 - implement Jira aggregation engine, schemas, routes, and tests",
+    "files": [
+      {
+        "file_path": "backend/app/api/v1/jiras.py",
+        "change_type": "MODIFIED",
+        "additions": 59,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/jira_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 136,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/commit.py",
+        "change_type": "MODIFIED",
+        "additions": 4,
+        "deletions": 10
+      },
+      {
+        "file_path": "backend/app/schemas/jira.py",
+        "change_type": "MODIFIED",
+        "additions": 39,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/repository.py",
+        "change_type": "MODIFIED",
+        "additions": 3,
+        "deletions": 5
+      },
+      {
+        "file_path": "backend/app/services/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/jira_aggregation.py",
+        "change_type": "MODIFIED",
+        "additions": 137,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_jira.py",
+        "change_type": "MODIFIED",
+        "additions": 38,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "4f911a9732cd5c35f602d5402c8d1dd71975df46",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T22:57:32+05:30",
+    "message": "feat(collector): step 3 - implement git commit collector, Celery tasks, and API routes",
+    "files": [
+      {
+        "file_path": "backend/app/api/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/deps.py",
+        "change_type": "MODIFIED",
+        "additions": 24,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 3,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/commits.py",
+        "change_type": "MODIFIED",
+        "additions": 140,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/repositories.py",
+        "change_type": "MODIFIED",
+        "additions": 145,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/api/v1/router.py",
+        "change_type": "MODIFIED",
+        "additions": 10,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/celery_app.py",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "file_path": "backend/app/main.py",
+        "change_type": "MODIFIED",
+        "additions": 4,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 12,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/base.py",
+        "change_type": "MODIFIED",
+        "additions": 62,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/repositories/commit_repo.py",
+        "change_type": "MODIFIED",
+        "additions": 188,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/commit.py",
+        "change_type": "MODIFIED",
+        "additions": 43,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/repository.py",
+        "change_type": "MODIFIED",
+        "additions": 45,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 5,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/services/commit_collector.py",
+        "change_type": "MODIFIED",
+        "additions": 352,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 6,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tasks/ingestion.py",
+        "change_type": "MODIFIED",
+        "additions": 58,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/tests/test_collector.py",
+        "change_type": "MODIFIED",
+        "additions": 39,
+        "deletions": 0
+      },
+      {
+        "file_path": "config/repositories.yaml",
+        "change_type": "MODIFIED",
+        "additions": 21,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "7217a123386a0e2427ee0eae193bafc7dd450cd1",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T22:53:57+05:30",
+    "message": "feat(database): step 2 - implement database models, migrations, and shared schemas",
+    "files": [
+      {
+        "file_path": "backend/alembic.ini",
+        "change_type": "MODIFIED",
+        "additions": 56,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 28,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/audit.py",
+        "change_type": "MODIFIED",
+        "additions": 39,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/author.py",
+        "change_type": "MODIFIED",
+        "additions": 29,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/base.py",
+        "change_type": "MODIFIED",
+        "additions": 36,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/commit.py",
+        "change_type": "MODIFIED",
+        "additions": 45,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/commit_file.py",
+        "change_type": "MODIFIED",
+        "additions": 32,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/commit_jira.py",
+        "change_type": "MODIFIED",
+        "additions": 26,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/file_hash.py",
+        "change_type": "MODIFIED",
+        "additions": 42,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/report.py",
+        "change_type": "MODIFIED",
+        "additions": 38,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/repository.py",
+        "change_type": "MODIFIED",
+        "additions": 39,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/snapshot.py",
+        "change_type": "MODIFIED",
+        "additions": 70,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/user.py",
+        "change_type": "MODIFIED",
+        "additions": 33,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/models/violation.py",
+        "change_type": "MODIFIED",
+        "additions": 58,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 17,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/schemas/common.py",
+        "change_type": "MODIFIED",
+        "additions": 56,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/migrations/env.py",
+        "change_type": "MODIFIED",
+        "additions": 82,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/migrations/versions/001_initial_schema.py",
+        "change_type": "MODIFIED",
+        "additions": 294,
+        "deletions": 0
+      },
+      {
+        "file_path": "db/init.sql",
+        "change_type": "MODIFIED",
+        "additions": 217,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "47cc8b053349f2cae47a45b9ef84834a0b724a73",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T20:35:16+05:30",
+    "message": "initialized backend virtual environment and dependency structure",
+    "files": [
+      {
+        "file_path": ".gitignore",
+        "change_type": "MODIFIED",
+        "additions": 69,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/.env.example",
+        "change_type": "MODIFIED",
+        "additions": 27,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/celery_app.py",
+        "change_type": "MODIFIED",
+        "additions": 27,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/config.py",
+        "change_type": "MODIFIED",
+        "additions": 47,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/core/__init__.py",
+        "change_type": "MODIFIED",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/core/database.py",
+        "change_type": "MODIFIED",
+        "additions": 61,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/core/exceptions.py",
+        "change_type": "MODIFIED",
+        "additions": 94,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/core/logging.py",
+        "change_type": "MODIFIED",
+        "additions": 60,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/core/redis.py",
+        "change_type": "MODIFIED",
+        "additions": 41,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/core/result.py",
+        "change_type": "MODIFIED",
+        "additions": 61,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/app/main.py",
+        "change_type": "MODIFIED",
+        "additions": 162,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/pyproject.toml",
+        "change_type": "MODIFIED",
+        "additions": 38,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/requirements-dev.txt",
+        "change_type": "MODIFIED",
+        "additions": 8,
+        "deletions": 0
+      },
+      {
+        "file_path": "backend/requirements.txt",
+        "change_type": "MODIFIED",
+        "additions": 20,
+        "deletions": 0
+      },
+      {
+        "file_path": "docker-compose.dev.yml",
+        "change_type": "MODIFIED",
+        "additions": 38,
+        "deletions": 0
+      }
+    ]
+  },
+  {
+    "sha": "fb467d382c522bf5d6965bea97abd98a5a10d739",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T02:10:02+05:30",
+    "message": "v2 changes",
+    "files": [
+      {
+        "file_path": "ARCHITECTURE.md",
+        "change_type": "MODIFIED",
+        "additions": 1014,
+        "deletions": 507
+      }
+    ]
+  },
+  {
+    "sha": "ddf8aa65831d2d6a21fcd1404006e6346d8f29bb",
+    "author_name": "Sahil",
+    "author_email": "Sahilkewat80085@gmail.com",
+    "author_username": "Sahilkewat80085",
+    "commit_date": "2026-06-06T01:04:02+05:30",
+    "message": "architectural plan",
+    "files": [
+      {
+        "file_path": "ARCHITECTURE.md",
+        "change_type": "MODIFIED",
+        "additions": 2842,
+        "deletions": 0
+      }
+    ]
+  }
+]
