@@ -123,10 +123,14 @@ export default function Header() {
 
         {/* Sync Result Indicators */}
         {syncStatus === 'success' && (
-          <CheckCircle2 className="h-5 w-5 text-emerald-500" title="Sync successful" />
+          <span title="Sync successful">
+            <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+          </span>
         )}
         {syncStatus === 'error' && (
-          <AlertCircle className="h-5 w-5 text-rose-500" title="Sync failed" />
+          <span title="Sync failed">
+            <AlertCircle className="h-5 w-5 text-rose-500" />
+          </span>
         )}
       </div>
     </header>

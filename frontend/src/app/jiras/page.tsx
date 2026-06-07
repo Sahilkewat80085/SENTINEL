@@ -9,7 +9,7 @@ import Badge from '@/components/ui/Badge';
 import { apiService } from '@/lib/api';
 import { JiraSummary } from '@/lib/types';
 import { useFilterStore } from '@/stores/filterStore';
-import { formatDate, getStatusColorClass } from '@/lib/utils';
+import { formatDate, getStatusColorClass, cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Eye } from 'lucide-react';
 

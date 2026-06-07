@@ -24,6 +24,13 @@ class CommitRepository(BaseRepository[Commit]):
         result = await db.execute(query)
         return result.scalar_one_or_none()
 
+    async def get_commits_for_repository(
+        self, db: AsyncSession, repository_id: Any, limit: int = 100
+    ) -> List[Commit]:
+        """Fetch recent commits for a specific repository up to a limit."""
+        commits, _ = await self.get_paginated_commits(db, repository_id=repository_id, limit=limit)
+        return commits
+
     async def get_paginated_commits(
         self,
         db: AsyncSession,

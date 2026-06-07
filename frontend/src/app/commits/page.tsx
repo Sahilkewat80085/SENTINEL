@@ -12,6 +12,8 @@ import { useFilterStore } from '@/stores/filterStore';
 import { formatDate, truncateSha } from '@/lib/utils';
 import { GitCommit, User, Calendar, ExternalLink } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
+import Skeleton from '@/components/ui/Skeleton';
+
 
 export default function CommitsPage() {
   const { selectedRepoId } = useFilterStore();

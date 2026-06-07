@@ -5,6 +5,7 @@ from app.repositories.violation_repo import violation_repo
 from app.repositories.snapshot_repo import snapshot_repo
 from app.repositories.user_repo import user_repo
 from app.repositories.audit_repo import audit_repo
+from app.repositories.report_repo import report_repo
 
 # Generic repositories for simple tables
 repository_repo = BaseRepository(Repository)
@@ -17,4 +18,5 @@ __all__ = [
     "snapshot_repo",
     "user_repo",
     "audit_repo",
+    "report_repo",
 ]

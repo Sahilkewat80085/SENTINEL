@@ -9,7 +9,7 @@ import Badge from '@/components/ui/Badge';
 import { apiService } from '@/lib/api';
 import { JiraDetail, Repository } from '@/lib/types';
 import { useFilterStore } from '@/stores/filterStore';
-import { formatDate, getStatusColorClass } from '@/lib/utils';
+import { formatDate, getStatusColorClass, cn } from '@/lib/utils';
 import { ArrowLeft, Clock, User, GitCommit, FolderClosed, Calendar } from 'lucide-react';
 import Skeleton from '@/components/ui/Skeleton';
 

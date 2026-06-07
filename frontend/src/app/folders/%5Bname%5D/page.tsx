@@ -10,7 +10,7 @@ import DataTable from '@/components/data/DataTable';
 import { apiService } from '@/lib/api';
 import { FolderHealthResult, MissingMerge, TrendPoint } from '@/lib/types';
 import { useFilterStore } from '@/stores/filterStore';
-import { getClassificationColorClass, formatDate } from '@/lib/utils';
+import { getClassificationColorClass, formatDate, cn } from '@/lib/utils';
 import { ArrowLeft, Clock, Grid, ShieldAlert, Award, FileSpreadsheet, CheckCircle2 } from 'lucide-react';
 import Skeleton from '@/components/ui/Skeleton';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps } from 'recharts';
@@ -53,7 +53,7 @@ export default function FolderDetailPage() {
     fetchFolderData();
   }, [name, selectedRepoId, period]);
 
-  const customTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+  const customTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="rounded-lg border border-card-border bg-card p-3 shadow-xl glow-primary">

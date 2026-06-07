@@ -95,7 +95,9 @@ export default function GovernanceGauge({ data, isLoading }: GovernanceGaugeProp
           <div className="flex justify-between items-center text-xs font-semibold text-gray-400">
             <span className="flex items-center gap-1">
               Active Penalty
-              <HelpCircle className="h-3 w-3 text-gray-600" title="Score subtracted for unresolved violations" />
+              <span title="Score subtracted for unresolved violations">
+                <HelpCircle className="h-3 w-3 text-gray-600" />
+              </span>
             </span>
             <span className={cn("font-mono font-bold", penalty > 0 ? "text-rose-400" : "text-emerald-400")}>
               -{penalty.toFixed(1)}

@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { apiService } from '@/lib/api';
 import { DriftReport, ContentVerificationResult } from '@/lib/types';
 import { useFilterStore } from '@/stores/filterStore';
-import { formatPercent, getStatusColorClass } from '@/lib/utils';
+import { formatPercent, getStatusColorClass, cn } from '@/lib/utils';
 import { Binary, CheckCircle, FileWarning, Eye, HelpCircle } from 'lucide-react';
 import Skeleton from '@/components/ui/Skeleton';
 import Modal from '@/components/ui/Modal';

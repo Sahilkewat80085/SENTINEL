@@ -21,7 +21,7 @@ interface CoverageChartProps {
   isLoading: boolean;
 }
 
-const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="rounded-lg border border-card-border bg-card p-3 shadow-xl glow-primary">

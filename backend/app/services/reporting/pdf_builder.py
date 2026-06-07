@@ -23,9 +23,9 @@ from app.services.exception_detection import ExceptionDetectionService
 try:
     import weasyprint
     HAS_WEASYPRINT = True
-except ImportError:
+except (ImportError, OSError) as e:
     HAS_WEASYPRINT = False
-    logger.warning("WeasyPrint not installed – PDF reporting will use fallback text mode")
+    logger.warning(f"WeasyPrint or its dependencies (e.g. GObject/Pango) are not available. PDF reports will fall back to HTML mode. Details: {e}")
 
 
 # ---------------------------------------------------------------------------
@@ -119,10 +119,10 @@ class PDFReportBuilder:
         health_res = await self.folder_health_service.compute_all_health(db, repo_id)
         health_list = sorted(health_res.value or [], key=lambda x: x.health_score, reverse=True)
 
-        coverage_res = await self.coverage_service.get_coverage_summary(db, repo_id)
+        coverage_res = await self.coverage_service.get_coverage_summary_data(db, repo_id)
         coverage = coverage_res.value if coverage_res.is_success else None
 
-        delay_res = await self.delay_service.get_delay_statistics(db, repo_id)
+        delay_res = await self.delay_service.get_delay_statistics_data(db, repo_id)
         delays = delay_res.value if delay_res.is_success else None
 
         violations_res = await self.violation_service.get_violations(

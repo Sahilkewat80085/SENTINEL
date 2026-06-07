@@ -11,6 +11,7 @@ from app.api.v1.violations import router as violations_router
 from app.api.v1.trends import router as trends_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.dashboard import router as dashboard_router
+from app.api.v1.reports import router as reports_router
 
 api_router = APIRouter()
 
@@ -26,3 +27,4 @@ api_router.include_router(violations_router, prefix="/violations", tags=["Except
 api_router.include_router(trends_router, prefix="/trends", tags=["Historical Trends"])
 api_router.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(dashboard_router, prefix="/dashboard", tags=["Dashboard"])
+api_router.include_router(reports_router, prefix="/reports", tags=["Reports"])

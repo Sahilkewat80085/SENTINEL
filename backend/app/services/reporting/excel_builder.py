@@ -291,8 +291,8 @@ class ExcelReportBuilder:
         _add_title_block(ws, "Jira Coverage Matrix", "Folder merge status per Jira ticket", now)
 
         # Get summary + matrix
-        summary_res = await self.coverage_service.get_coverage_summary(db, repo_id)
-        matrix_res = await self.coverage_service.get_coverage_matrix(db, repo_id)
+        summary_res = await self.coverage_service.get_coverage_summary_data(db, repo_id)
+        matrix_res = await self.coverage_service.get_coverage_matrix_data(db, repo_id)
         summary = summary_res.value if summary_res.is_success else None
         matrix = matrix_res.value if matrix_res.is_success else None
 
@@ -357,7 +357,7 @@ class ExcelReportBuilder:
         ws.sheet_view.showGridLines = False
         _add_title_block(ws, "Merge Delay Analysis", "Propagation delay rankings by deployment folder", now)
 
-        stats_res = await self.delay_service.get_delay_statistics(db, repo_id)
+        stats_res = await self.delay_service.get_delay_statistics_data(db, repo_id)
         stats = stats_res.value if stats_res.is_success else None
 
         if stats:
@@ -409,7 +409,7 @@ class ExcelReportBuilder:
         ws.sheet_view.showGridLines = False
         _add_title_block(ws, "Content Drift Report", "SHA256 file hash verification across deployment folders", now)
 
-        drift_res = await self.content_service.get_drift_report(db, repo_id)
+        drift_res = await self.content_service.get_drift_report_data(db, repo_id)
         drift = drift_res.value if drift_res.is_success else None
 
         if drift:

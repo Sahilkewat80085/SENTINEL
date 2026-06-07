@@ -132,6 +132,20 @@ class TrendAnalyticsService:
         ]
         return ServiceResult.success(points)
 
+    async def get_health_trend(
+        self, db: AsyncSession, repository_id: uuid.UUID, days: int = 30
+    ) -> ServiceResult[List[TrendPoint]]:
+        """Compiles overall historical repository health/governance score points."""
+        snapshots = await snapshot_repo.get_governance_snapshots(db, repository_id, days=days)
+        points = [
+            TrendPoint(
+                date=s.snapshot_date,
+                value=float(s.governance_score) if s.governance_score is not None else 0.0
+            )
+            for s in snapshots
+        ]
+        return ServiceResult.success(points)
+
     async def get_delay_trend(
         self, db: AsyncSession, repository_id: uuid.UUID, days: int = 30
     ) -> ServiceResult[List[TrendPoint]]:

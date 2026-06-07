@@ -8,7 +8,7 @@ import Progress from '@/components/ui/Progress';
 import { apiService } from '@/lib/api';
 import { FolderHealthResult } from '@/lib/types';
 import { useFilterStore } from '@/stores/filterStore';
-import { getClassificationColorClass } from '@/lib/utils';
+import { getClassificationColorClass, cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Eye, ShieldAlert, Award, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
