@@ -15,25 +15,15 @@ reusable_oauth2 = OAuth2PasswordBearer(
 
 
 async def get_current_user(
-    db: AsyncSession = Depends(get_db),
-    token: str = Depends(reusable_oauth2)
+    db: AsyncSession = Depends(get_db)
 ) -> User:
-    """Dependency helper to resolve the currently authenticated User using JWT tokens."""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    username = decode_token(token)
-    if username is None:
-        raise credentials_exception
-        
-    user = await user_repo.get_by_username(db, username=username)
+    """Dependency helper to resolve the default authenticated User, bypassing JWT checks."""
+    user = await user_repo.get_by_username(db, username="admin")
     if user is None:
-        raise credentials_exception
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
+        user = User(
+            username="admin",
+            email="admin@sentinel.local",
+            role="admin",
+            is_active=True
         )
     return user

@@ -205,13 +205,13 @@ SELECT
     cj.jira_id,
     r.id AS repository_id,
     f.folder_name AS expected_folder,
-    CASE WHEN cf.folder IS NOT NULL THEN true ELSE false END AS is_merged,
+    COALESCE(BOOL_OR(cf.folder IS NOT NULL), false) AS is_merged,
     MIN(c.commit_date) FILTER (WHERE cf.folder = f.folder_name) AS merge_date
 FROM commit_jiras cj
 JOIN commits c ON c.id = cj.commit_id
 JOIN repositories r ON r.id = c.repository_id
-CROSS JOIN LATERAL unnest(r.folders::text[]) AS f(folder_name)
+CROSS JOIN LATERAL jsonb_array_elements_text(r.folders) AS f(folder_name)
 LEFT JOIN commit_files cf ON cf.commit_id = c.id AND cf.folder = f.folder_name
-GROUP BY cj.jira_id, r.id, f.folder_name, cf.folder;
+GROUP BY cj.jira_id, r.id, f.folder_name;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_coverage ON mv_coverage_matrix(jira_id, repository_id, expected_folder);

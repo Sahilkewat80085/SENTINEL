@@ -132,34 +132,14 @@ export default function Sidebar() {
           {sidebarOpen && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">
-                {user?.username || 'Guest User'}
+                System Administrator
               </p>
               <p className="text-xs text-gray-400 capitalize truncate">
-                {user?.role || 'viewer'}
+                Public Dashboard Mode
               </p>
             </div>
           )}
-          {sidebarOpen && (
-            <button 
-              onClick={logout}
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
-              title="Logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          )}
         </div>
-        {!sidebarOpen && (
-          <div className="mt-2 flex justify-center">
-            <button 
-              onClick={logout}
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
-              title="Logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
-        )}
       </div>
     </aside>
   );

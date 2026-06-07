@@ -21,30 +21,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const isLoginPage = pathname === '/login';
 
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  // Auth Guard redirect
-  useEffect(() => {
-    if (!isAuthLoading && !isAuthenticated && !isLoginPage) {
-      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
-    }
-  }, [isAuthenticated, isAuthLoading, isLoginPage, pathname, router]);
-
-  // Render loading state
-  if (isAuthLoading && !isLoginPage) {
-    return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center bg-[#090d16] text-white">
-        <div className="relative flex h-16 w-16 items-center justify-center rounded-xl bg-blue-600 shadow-xl glow-primary animate-bounce mb-4">
-          <Shield className="h-9 w-9 text-white" />
-        </div>
-        <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase animate-pulse">
-          Sentinel Shield Initializing...
-        </p>
-      </div>
-    );
-  }
+  // No auth guard or loading screens required for public access mode
 
   // Login page layout (no Sidebar / Header)
   if (isLoginPage) {
