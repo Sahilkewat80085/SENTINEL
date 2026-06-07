@@ -1,114 +1,199 @@
 # 🛡 SENTINEL — Git Governance & Release Readiness Dashboard
 
-SENTINEL is an enterprise-grade Git Governance and Release Readiness Platform. It continuously analyzes Git repositories against configured customer folders and deployment targets, verifying ticket coverage, commit propagation delays, line-ending consistency, and compliance violations to compute a real-time composite **Governance Score**.
+SENTINEL is an enterprise-grade Git Governance and Release Readiness Platform. It continuously analyzes Git commit history against configured deployment folders, tracking ticket coverage, propagation delays, file drift, and compliance violations to compute a real-time composite **Governance Score**.
 
 ---
 
-## 🏗 System Architecture
+## 🚀 Quick Start — New Machine Setup
 
-SENTINEL is structured as a modern full-stack web application:
+### Prerequisites
+Make sure these are installed on the machine:
 
-```mermaid
-graph TD
-    Client[Next.js 16 Web Dashboard] -->|HTTP / JSON| API[FastAPI Gateway]
-    API -->|Async Actions| Celery[Celery Task Worker]
-    Celery -->|State / Cache| Redis[Redis Broker & Cache]
-    API -->|Write / Query| DB[(PostgreSQL 16 DB)]
-    Celery -->|CRUD| DB
-    Collector[GitHub Collector] -->|Ingests Commits| API
-```
+| Tool | Minimum Version | Check |
+|------|----------------|-------|
+| Docker Desktop | 4.x+ | `docker --version` |
+| Git | Any | `git --version` |
 
-### 1. Backend Service Layer (`/backend`)
-- **FastAPI**: Serves the REST API gateway, authentication, and endpoint routing.
-- **SQLAlchemy (Async)**: Integrates with Postgres 16 for all database operations.
-- **Celery & Redis**: Offloads git ingestion, daily snapshot analytics, and report generation.
-- **Matplotlib & openpyxl & WeasyPrint**: The Reporting Engine modules.
-
-### 2. Frontend Interface (`/frontend`)
-- **Next.js 16 (App Router)**: Single Page App client with premium dark mode aesthetics.
-- **Zustand**: Clean, reactive global state stores.
-- **Recharts**: Responsive SVGs rendering historical health and coverage trends.
+> **That's it.** Everything else (Python, Node.js, PostgreSQL, Redis) runs inside Docker.
 
 ---
 
-## 🚦 Getting Started
+### Step 1 — Clone the Repository
 
-### Option A: Local Development Setup
-
-#### 1. Database & Broker (via Docker)
-Start the PostgreSQL and Redis containers:
 ```bash
-docker compose -f docker-compose.dev.yml up -d
+git clone https://github.com/Sahilkewat80085/SENTINEL.git
+cd SENTINEL
 ```
-
-#### 2. Run Backend API & Worker
-Ensure you have Python 3.12 installed.
-```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate      # Windows
-source .venv/bin/activate    # macOS/Linux
-
-pip install -r requirements.txt -r requirements-dev.txt
-
-# Run migrations
-alembic upgrade head
-
-# Seed initial mock data
-$env:PYTHONPATH="."
-python app/core/seed.py
-
-# Start API Server
-uvicorn app.main:app --reload --port 8000
-
-# Start Celery Worker (in a separate terminal)
-celery -A app.celery_app worker --loglevel=info
-```
-
-#### 3. Run Frontend App
-Ensure you have Node.js 18+ installed.
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) to view the dashboard. Use default admin credentials: `admin` / `admin`.
 
 ---
 
-### Option B: Production Docker Deployment (Multi-service Compose)
+### Step 2 — Start All Services
 
-Build and boot the entire stack (Postgres, Redis, Backend, Celery, Frontend, and Nginx proxy) with a single command:
 ```bash
 docker compose up -d --build
 ```
-Nginx will listen on port `80`. Access the application via `http://localhost`.
+
+This builds and starts 6 containers:
+
+| Container | Role | Port |
+|-----------|------|------|
+| `sentinel-nginx` | Reverse proxy / entry point | **80** |
+| `sentinel-frontend` | Next.js dashboard | 3000 |
+| `sentinel-backend` | FastAPI REST API | 8000 |
+| `sentinel-celery` | Background task worker | — |
+| `sentinel-db` | PostgreSQL 16 database | 5432 |
+| `sentinel-redis` | Redis broker & cache | 6379 |
+
+> ⏳ First build takes **5–10 minutes** (downloads images, compiles frontend). Subsequent starts take ~30 seconds.
+
+Wait for all containers to be healthy:
+```bash
+docker compose ps
+```
+All should show `Up` status.
 
 ---
 
-## 🧪 Running Tests
+### Step 3 — Seed the Database
 
-### Backend Unit Tests
-Run the pytest test suite:
 ```bash
-cd backend
-$env:PYTHONPATH="."
-.venv\Scripts\pytest
+docker exec sentinel-backend python -m app.core.seed
 ```
 
-### Frontend Typechecking & Linter
-```bash
-cd frontend
-npm run lint
-npm run build
+Expected output:
+```
+🛡 Seeding SENTINEL database with mock data...
+Seeding authors...
+Syncing real commits from public GitHub API...
+Synced successfully: {'synced_commits_count': 17, 'inserted_commits_count': 17, 'status': 'success'}
+Refreshing materialized views...
+Scanning and seeding mock hashes...
+Evaluating governance rules...
+Seeding daily snapshots for historical graphs...
+✅ Seeding complete! SENTINEL database is now fully populated with real repo commits.
 ```
 
 ---
 
-## 📈 Dashboard Key Features
+### Step 4 — Open the Dashboard
 
-1. **Composite Governance Gauge**: Computes repository grade (A-F) combining health parameters minus severity-weighted active violations.
-2. **Jira Coverage Matrix**: Maps Jiras to expected folder deployments showing real-time sync checkpoints.
-3. **Merge Delay Analytics**: Measures average and P95 propagation time for Jira tickets to travel from staging to customer configurations.
-4. **SHA256 Content Drift**: Scrapes and compares file checksums across deployment directories to detect uncommitted changes or environment skew.
-5. **Executive Report Builder**: One-click compliance exports to a 9-sheet Excel sheet or high-quality PDF.
+Navigate to: **http://localhost/**
+
+The dashboard opens directly — **no login required**.
+
+---
+
+### Step 5 — Generate a Report
+
+1. Click **"Reports"** in the left sidebar
+2. Click **"Generate Excel Report"** or **"Generate PDF Report"**
+3. The report downloads automatically to your browser
+
+---
+
+## 📊 Dashboard Pages
+
+| Page | URL | Description |
+|------|-----|-------------|
+| Dashboard | `/` | Governance Score gauge, KPIs, recent violations |
+| Jira Explorer | `/jiras` | All Jiras with folder coverage status |
+| Jira Detail | `/jiras/[id]` | Commit propagation timeline per ticket |
+| Folders | `/folders` | Health ranking of all deployment folders |
+| Folder Detail | `/folders/[name]` | Per-folder health history charts |
+| Commit Log | `/commits` | Full commit history with file change details |
+| Coverage Matrix | `/coverage` | Jira × Folder deployment grid |
+| Content Drift | `/content` | SHA256 file consistency across folders |
+| Violations | `/violations` | Active governance rule violations |
+| Historical Trends | `/trends` | Coverage, health, delay charts over 30 days |
+| Reports | `/reports` | Excel & PDF compliance report generator |
+| Settings | `/settings` | Repository configuration & sync controls |
+
+---
+
+## 🛑 Stop / Restart
+
+```bash
+# Stop all containers (preserve data)
+docker compose down
+
+# Stop and wipe all data (fresh start)
+docker compose down -v
+
+# Restart a single container
+docker compose restart sentinel-backend
+```
+
+---
+
+## 🔧 Troubleshooting
+
+**Dashboard shows no data after opening**
+→ Run the seeder: `docker exec sentinel-backend python -m app.core.seed`
+
+**Containers fail to start**
+→ Check Docker Desktop is running and has enough RAM (≥4 GB recommended)
+→ Check logs: `docker compose logs sentinel-backend`
+
+**Port 80 already in use**
+→ Stop whatever is using port 80, or change the nginx port in `docker-compose.yml`:
+```yaml
+ports:
+  - "8080:80"   # access via http://localhost:8080
+```
+
+**Want to re-seed from scratch (clear all data)**
+```bash
+docker compose down -v
+docker compose up -d
+docker exec sentinel-backend python -m app.core.seed
+```
+
+---
+
+## 🏗 Architecture
+
+```
+Client Browser
+      │
+      ▼
+ Nginx :80
+   ├── /api/v1/* ──────► FastAPI Backend :8000 ──► PostgreSQL :5432
+   │                            │                        │
+   │                            └──► Redis :6379 ◄── Celery Worker
+   └── /* ──────────────► Next.js Frontend :3000
+```
+
+---
+
+## 🌱 Environment Variables (Optional)
+
+All defaults are pre-configured in `docker-compose.yml`. You only need to override these if you want to customize:
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `GITHUB_PAT` | *(not set)* | GitHub Personal Access Token for higher rate limits (60→5000 req/hr). Optional. |
+| `JWT_SECRET` | *(hardcoded)* | Change for production security |
+| `DATABASE_URL` | internal | PostgreSQL connection string |
+
+To set `GITHUB_PAT`:
+```bash
+# Windows
+set GITHUB_PAT=ghp_your_token_here
+docker compose up -d --build
+
+# Linux/macOS
+GITHUB_PAT=ghp_your_token_here docker compose up -d --build
+```
+
+---
+
+## 📈 Key Features
+
+1. **Composite Governance Score** — Grade A–F computed from folder health + severity-weighted violations
+2. **Jira Coverage Matrix** — Maps Jira tickets to deployment folders showing merge status
+3. **Merge Delay Analytics** — Average and P95 propagation time from staging to production
+4. **SHA256 Content Drift** — Detects file configuration divergence across deployment environments
+5. **10 Pluggable Governance Rules** — GOV-001 through GOV-010 with acknowledgement workflow
+6. **Executive Reports** — One-click export to 9-sheet Excel or formatted PDF
+7. **Historical Trends** — 30-day governance score, coverage, and delay charts
+8. **Public Access** — No authentication required to view the dashboard

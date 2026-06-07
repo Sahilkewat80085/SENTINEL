@@ -83,8 +83,6 @@ services:
       dockerfile: Dockerfile
     container_name: sentinel-frontend
     restart: always
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
     ports:
