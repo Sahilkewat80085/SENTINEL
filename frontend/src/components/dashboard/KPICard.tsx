@@ -26,29 +26,29 @@ export default function KPICard({
     switch (color) {
       case 'emerald':
         return {
-          glow: 'glow-success border-emerald-500/20 bg-emerald-500/5',
-          iconBg: 'bg-emerald-500/10 text-emerald-400',
+          glow: 'border-card-border bg-card',
+          iconBg: 'bg-emerald-950/30 text-emerald-400 border border-emerald-500/20',
         };
       case 'amber':
         return {
-          glow: 'glow-warning border-amber-500/20 bg-amber-500/5',
-          iconBg: 'bg-amber-500/10 text-amber-400',
+          glow: 'border-card-border bg-card',
+          iconBg: 'bg-amber-950/30 text-amber-400 border border-amber-500/20',
         };
       case 'rose':
         return {
-          glow: 'glow-danger border-rose-500/20 bg-rose-500/5',
-          iconBg: 'bg-rose-500/10 text-rose-400',
+          glow: 'border-card-border bg-card',
+          iconBg: 'bg-rose-950/30 text-rose-400 border border-rose-500/20',
         };
       case 'indigo':
         return {
-          glow: 'border-indigo-500/20 bg-indigo-500/5',
-          iconBg: 'bg-indigo-500/10 text-indigo-400',
+          glow: 'border-card-border bg-card',
+          iconBg: 'bg-indigo-950/30 text-indigo-400 border border-indigo-500/20',
         };
       case 'blue':
       default:
         return {
-          glow: 'glow-primary border-blue-500/20 bg-blue-500/5',
-          iconBg: 'bg-blue-500/10 text-blue-400',
+          glow: 'border-card-border bg-card',
+          iconBg: 'bg-blue-950/30 text-blue-400 border border-blue-500/20',
         };
     }
   };
@@ -56,7 +56,7 @@ export default function KPICard({
   const themeColors = getColorClasses();
 
   return (
-    <Card className={cn("transition-all duration-300 hover:scale-[1.02]", themeColors.glow)}>
+    <Card className={cn("transition-colors duration-200", themeColors.glow)}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>

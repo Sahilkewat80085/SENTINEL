@@ -45,7 +45,7 @@ export default function GovernanceGauge({ data, isLoading }: GovernanceGaugeProp
       </CardHeader>
       <CardContent className="flex-1 flex flex-col items-center justify-center py-4">
         {/* Rating Gauge Circle */}
-        <div className="relative flex h-36 w-36 items-center justify-center rounded-full border-4 border-slate-800 bg-[#0d1322]/50 shadow-inner">
+        <div className="relative flex h-36 w-36 items-center justify-center rounded-full border-4 border-slate-800 bg-background">
           {/* Rating Circle Outline depending on Score percentage */}
           <svg className="absolute inset-0 h-full w-full -rotate-90">
             <circle

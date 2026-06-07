@@ -47,7 +47,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between px-6 border-b border-card-border bg-[#0d1322]/85 backdrop-blur-md">
+    <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between px-6 border-b border-card-border bg-background/85 backdrop-blur-md">
       {/* Left side: Toggle button and page details */}
       <div className="flex items-center gap-4">
         {!sidebarOpen && (

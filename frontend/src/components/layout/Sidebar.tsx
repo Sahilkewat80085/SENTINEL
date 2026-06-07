@@ -61,7 +61,7 @@ export default function Sidebar() {
       )}
     >
       {/* Header / Logo */}
-      <div className="flex h-16 items-center justify-between px-4 border-b border-card-border bg-[#0d1322]/50">
+      <div className="flex h-16 items-center justify-between px-4 border-b border-card-border bg-background/50">
         <Link href="/" className="flex items-center gap-2 overflow-hidden">
           <div className="flex h-8 w-8 items-center justify-between rounded-lg bg-blue-600 p-1.5 text-white shadow-md glow-primary">
             <Shield className="h-5 w-5" />
@@ -124,7 +124,7 @@ export default function Sidebar() {
       )}
 
       {/* User Footer Profile */}
-      <div className="border-t border-card-border bg-[#0d1322]/50 p-4">
+      <div className="border-t border-card-border bg-background/50 p-4">
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-slate-800 text-gray-300">
             <UserIcon className="h-4 w-4" />
