@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from app.config import settings
 from app.core.exceptions import EntityNotFoundException
 from app.core.logging import logger
 from app.core.result import ServiceResult
@@ -114,6 +115,7 @@ class ContentVerificationService:
     async def _seed_mock_hashes(self, db: AsyncSession, repo: Repository) -> None:
         """Generates deterministic mock files with drift to show on the dashboard UI."""
         import random
+        from datetime import datetime, timezone
         random.seed(42)
 
         # Query existing commits to build file_hashes linking actual DB SHAs
@@ -128,23 +130,61 @@ class ContentVerificationService:
         res = await db.execute(stmt)
         rows = res.all()
 
-        hashes_to_insert = []
+        latest_hashes = {}
         for file_path, folder, sha, commit_date in rows:
-            # We want to create drift!
-            # If the file path is 'configs/settings.yaml', let's say 20% of folders have a different hash!
-            # Otherwise, folders have identical hashes.
-            base_hash = hashlib.sha256(file_path.encode()).hexdigest()
+            if not folder:
+                continue
             
-            # Let's drift the settings path
-            if "settings.yaml" in file_path and folder in ["MET", "AMO"]:
-                # Divergent hash
-                sha256_hash = hashlib.sha256(f"{file_path}-drifted-value".encode()).hexdigest()
+            # Strip folder prefix
+            rel_path = file_path
+            prefix = f"{folder}/"
+            if file_path.startswith(prefix):
+                rel_path = file_path[len(prefix):]
+                
+            key = (rel_path, folder)
+            if key not in latest_hashes or commit_date > latest_hashes[key]["commit_date"]:
+                latest_hashes[key] = {
+                    "file_path": rel_path,
+                    "folder": folder,
+                    "sha": sha,
+                    "commit_date": commit_date
+                }
+
+        # Inject simulated configuration files across all folders to demonstrate drift in the UI
+        for folder in repo.folders:
+            for rel_path in ["configs/settings.yaml", "deploy/params.json"]:
+                key = (rel_path, folder)
+                if key not in latest_hashes:
+                    latest_hashes[key] = {
+                        "file_path": rel_path,
+                        "folder": folder,
+                        "sha": "1740fc0380286f0ba61b6561127a0acc0704acc8",
+                        "commit_date": datetime(2026, 6, 7, 12, 0, 0, tzinfo=timezone.utc)
+                    }
+
+        hashes_to_insert = []
+        for key, val in latest_hashes.items():
+            rel_path = val["file_path"]
+            folder = val["folder"]
+            sha = val["sha"]
+            commit_date = val["commit_date"]
+
+            base_hash = hashlib.sha256(rel_path.encode()).hexdigest()
+            
+            # Simulate drift for demo purposes:
+            # If the file path is settings.yaml or params.json, and it's not the primary folder,
+            # make the hash divergent.
+            if "settings.yaml" in rel_path or "params.json" in rel_path:
+                if len(repo.folders) > 0 and folder != repo.folders[0]:
+                    sha256_hash = hashlib.sha256(f"{rel_path}-drifted-{folder}".encode()).hexdigest()
+                else:
+                    sha256_hash = base_hash
             else:
                 sha256_hash = base_hash
 
             hashes_to_insert.append({
                 "repository_id": repo.id,
-                "file_path": file_path,
+                "file_path": rel_path,
                 "folder": folder,
                 "sha256_hash": sha256_hash,
                 "file_size": random.randint(1024, 8192),

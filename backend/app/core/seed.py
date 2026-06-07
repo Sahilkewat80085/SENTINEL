@@ -10,7 +10,7 @@ import random
 import hashlib
 from datetime import datetime, date, timedelta, timezone
 
-from sqlalchemy import text
+from sqlalchemy import text, select
 from app.core.database import get_db_context
 from app.core.security import get_password_hash
 from app.models.repository import Repository
@@ -43,7 +43,7 @@ async def seed_data():
             )
             db.add(db_admin)
             await db.flush()
-
+            
         # 2. Seed default repository
         res = await db.execute(text("SELECT id FROM repositories WHERE name = 'SENTINEL'"))
         repo_id = res.scalar_one_or_none()
@@ -52,9 +52,9 @@ async def seed_data():
             repo = Repository(
                 id=uuid.UUID("7c3f3f3f-4f4f-4f4f-4f4f-4f4f4f4f4f4f"),
                 name="SENTINEL",
-                url="mock://github.com/Sahilkewat80085/SENTINEL",
+                url="https://github.com/Sahilkewat80085/SENTINEL",
                 default_branch="main",
-                folders=["vanilla", "MET", "AMO"],
+                folders=["backend", "frontend", "nginx", "monitoring"],
                 jira_patterns=["SEN-\\d+"],
                 sync_mode="api",
                 sync_interval=30,
@@ -65,6 +65,13 @@ async def seed_data():
             repo_id = repo.id
         else:
             repo_id = uuid.UUID(str(repo_id))
+            # Update url and folders if they exist
+            stmt = select(Repository).where(Repository.id == repo_id)
+            repo = (await db.execute(stmt)).scalar_one()
+            repo.url = "https://github.com/Sahilkewat80085/SENTINEL"
+            repo.folders = ["backend", "frontend", "nginx", "monitoring"]
+            db.add(repo)
+            await db.flush()
 
         # 3. Seed authors
         print("Seeding authors...")
@@ -85,96 +92,29 @@ async def seed_data():
                 author_objs.append(author)
             else:
                 # Retrieve existing author
-                res = await db.execute(text("SELECT * FROM authors WHERE id = :id"), {"id": auth_id})
-                row = res.first()
-                if row:
-                    # fetch model object
-                    from app.models.author import Author as AuthorModel
-                    stmt = select(AuthorModel).where(AuthorModel.id == auth_id)
-                    author_objs.append((await db.execute(stmt)).scalar_one())
+                from app.models.author import Author as AuthorModel
+                stmt = select(AuthorModel).where(AuthorModel.id == auth_id)
+                author_objs.append((await db.execute(stmt)).scalar_one())
 
         # Clean existing mock commits/files/jiras/violations for the repo to allow fresh seeding
         await db.execute(text("DELETE FROM commit_files WHERE commit_id IN (SELECT id FROM commits WHERE repository_id = :repo_id)"), {"repo_id": repo_id})
         await db.execute(text("DELETE FROM commit_jiras WHERE commit_id IN (SELECT id FROM commits WHERE repository_id = :repo_id)"), {"repo_id": repo_id})
+        await db.execute(text("DELETE FROM file_hashes WHERE repository_id = :repo_id"), {"repo_id": repo_id})
         await db.execute(text("DELETE FROM commits WHERE repository_id = :repo_id"), {"repo_id": repo_id})
         await db.execute(text("DELETE FROM rule_violations WHERE repository_id = :repo_id"), {"repo_id": repo_id})
         await db.execute(text("DELETE FROM governance_snapshots WHERE repository_id = :repo_id"), {"repo_id": repo_id})
         await db.execute(text("DELETE FROM folder_health_snapshots WHERE repository_id = :repo_id"), {"repo_id": repo_id})
         await db.commit()
 
-        # 4. Seed commits (30 days of commits history to build nice trends)
-        print("Generating mock commit history...")
-        now = datetime.now(timezone.utc)
-        random.seed(42)
-        
-        # We will create 20 Jira tickets
-        jiras = [f"SEN-{i}" for i in range(101, 121)]
-        
-        # Each Jira ticket will have:
-        # - A commit in vanilla folder
-        # - A commit in MET folder (90% probability, to create partial coverage)
-        # - A commit in AMO folder (75% probability, to create missing merges)
-        for idx, jira in enumerate(jiras):
-            auth = random.choice(author_objs)
-            base_date = now - timedelta(days=25 - (idx * 1.2))
-            
-            # Commit 1: Vanilla (Initial)
-            sha1 = hashlib.sha1(f"{jira}-vanilla".encode()).hexdigest()
-            c1 = Commit(
-                sha=sha1,
-                repository_id=repo_id,
-                author_id=auth.id,
-                branch="main",
-                message=f"feat: implemented feature for {jira} in vanilla layout",
-                commit_date=base_date
-            )
-            db.add(c1)
-            await db.flush()
-            
-            db.add(CommitFile(commit_id=c1.id, file_path="configs/settings.yaml", folder="vanilla", change_type="MODIFIED", additions=10, deletions=2))
-            db.add(CommitJira(commit_id=c1.id, jira_id=jira))
-            
-            # Commit 2: MET (Merged after 1-4 days)
-            if random.random() < 0.9:
-                delay = random.randint(1, 4)
-                sha2 = hashlib.sha1(f"{jira}-met".encode()).hexdigest()
-                c2 = Commit(
-                    sha=sha2,
-                    repository_id=repo_id,
-                    author_id=auth.id,
-                    branch="main",
-                    message=f"merge: synced ticket {jira} to MET customer profile",
-                    commit_date=base_date + timedelta(days=delay)
-                )
-                db.add(c2)
-                await db.flush()
-                
-                db.add(CommitFile(commit_id=c2.id, file_path="configs/settings.yaml", folder="MET", change_type="MODIFIED", additions=10, deletions=2))
-                db.add(CommitJira(commit_id=c2.id, jira_id=jira))
-
-            # Commit 3: AMO (Merged after 3-10 days, but some tickets won't merge to create violations!)
-            should_merge = True
-            delay = random.randint(3, 10)
-            if idx == 0 or idx == 1:
-                should_merge = False  # Missing merges!
-            elif idx == 2:
-                delay = 18  # High delay violation!
-
-            if should_merge and random.random() < 0.8:
-                sha3 = hashlib.sha1(f"{jira}-amo".encode()).hexdigest()
-                c3 = Commit(
-                    sha=sha3,
-                    repository_id=repo_id,
-                    author_id=auth.id,
-                    branch="main",
-                    message=f"merge: deployed {jira} changes to AMO customer folder",
-                    commit_date=base_date + timedelta(days=delay)
-                )
-                db.add(c3)
-                await db.flush()
-                
-                db.add(CommitFile(commit_id=c3.id, file_path="configs/settings.yaml", folder="AMO", change_type="MODIFIED", additions=10, deletions=2))
-                db.add(CommitJira(commit_id=c3.id, jira_id=jira))
+        # 4. Sync real commits from public GitHub API
+        print("Syncing real commits from public GitHub API...")
+        from app.services.commit_collector import CommitCollectorService
+        collector = CommitCollectorService()
+        sync_res = await collector.sync_repository(db, repo_id)
+        if sync_res.is_failure:
+            print(f"GitHub Sync Failed: {sync_res.error}.")
+        else:
+            print(f"Synced successfully: {sync_res.value}")
 
         await db.commit()
 
@@ -185,7 +125,7 @@ async def seed_data():
         await db.commit()
 
         # 6. Seed mock file hashes for content verification
-        print("Scanning and seeding mock SHA256 hashes...")
+        print("Scanning and seeding mock hashes...")
         content_service = ContentVerificationService()
         await content_service.verify_repository_files(db, repo_id)
 
@@ -210,8 +150,8 @@ async def seed_data():
             snap = GovernanceSnapshot(
                 repository_id=repo_id,
                 snapshot_date=snap_date,
-                total_jiras=20,
-                total_commits=50 + i,
+                total_jiras=15,
+                total_commits=35 + i,
                 overall_coverage_pct=round(cov_pct, 2),
                 missing_merge_count=3 if i < 15 else 2,
                 critical_violation_count=crit_count,
@@ -225,13 +165,13 @@ async def seed_data():
             )
             db.add(snap)
             
-            for folder in ["vanilla", "MET", "AMO"]:
-                if folder == "vanilla":
+            for folder in ["backend", "frontend", "nginx", "monitoring"]:
+                if folder == "backend":
                     base_h = 95.0
-                elif folder == "MET":
+                elif folder == "frontend":
                     base_h = 75.0 + (progress_ratio * 15.0)
                 else:
-                    base_h = 60.0 + (progress_ratio * 25.0)
+                    base_h = 85.0 + (progress_ratio * 10.0)
                     
                 fsnap = FolderHealthSnapshot(
                     repository_id=repo_id,
@@ -246,7 +186,7 @@ async def seed_data():
                 db.add(fsnap)
 
         await db.commit()
-        print("✅ Seeding complete! SENTINEL database is now fully populated.")
+        print("✅ Seeding complete! SENTINEL database is now fully populated with real repo commits.")
 
 
 if __name__ == "__main__":

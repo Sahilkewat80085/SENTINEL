@@ -24,26 +24,29 @@ class SingleFolderRule(GovernanceRule):
     def evaluate(self, context: RuleContext) -> List[RuleViolationInfo]:
         violations = []
         expected_folders = context.coverage_matrix.folders_list
-        non_vanilla_expected = [f for f in expected_folders if f != "vanilla"]
+        if not expected_folders:
+            return violations
+        initial_folder = expected_folders[0]
+        non_initial_expected = [f for f in expected_folders if f != initial_folder]
 
-        # If there's only one non-vanilla folder expected, merging to it is complete propagation
-        if len(non_vanilla_expected) <= 1:
+        # If there's only one non-initial folder expected, merging to it is complete propagation
+        if len(non_initial_expected) <= 1:
             return violations
 
         for row in context.coverage_matrix.rows:
-            vanilla_merged = False
-            merged_non_vanilla = []
+            initial_merged = False
+            merged_non_initial = []
 
             for f_detail in row.folders:
-                if f_detail.folder_name == "vanilla":
+                if f_detail.folder_name == initial_folder:
                     if f_detail.is_merged:
-                        vanilla_merged = True
+                        initial_merged = True
                 else:
                     if f_detail.is_merged:
-                        merged_non_vanilla.append(f_detail.folder_name)
+                        merged_non_initial.append(f_detail.folder_name)
 
-            if vanilla_merged and len(merged_non_vanilla) == 1:
-                flagged_folder = merged_non_vanilla[0]
+            if initial_merged and len(merged_non_initial) == 1:
+                flagged_folder = merged_non_initial[0]
                 violations.append(
                     RuleViolationInfo(
                         rule_id=self.rule_id,
@@ -51,12 +54,12 @@ class SingleFolderRule(GovernanceRule):
                         category=self.category,
                         jira_id=row.jira_id,
                         description=(
-                            f"Jira {row.jira_id} is only merged in 'vanilla' and folder '{flagged_folder}'. "
+                            f"Jira {row.jira_id} is only merged in '{initial_folder}' and folder '{flagged_folder}'. "
                             "It has not propagated to other expected environment folders."
                         ),
                         details={
                             "jira_id": row.jira_id,
-                            "merged_folders": ["vanilla", flagged_folder],
+                            "merged_folders": [initial_folder, flagged_folder],
                             "expected_folders": expected_folders
                         }
                     )

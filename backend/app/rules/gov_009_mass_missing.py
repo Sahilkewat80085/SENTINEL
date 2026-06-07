@@ -27,8 +27,11 @@ class MassMissingRule(GovernanceRule):
         config = get_rules_config().get(self.rule_id, {})
         threshold = config.get("threshold_jiras", 5)
 
-        for folder in context.coverage_matrix.folders_list:
-            if folder == "vanilla":
+        expected_folders = context.coverage_matrix.folders_list
+        initial_folder = expected_folders[0] if expected_folders else "vanilla"
+
+        for folder in expected_folders:
+            if folder == initial_folder:
                 continue
 
             missing_count = sum(

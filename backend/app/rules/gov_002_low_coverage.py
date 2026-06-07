@@ -27,9 +27,12 @@ class LowCoverageRule(GovernanceRule):
         config = get_rules_config().get(self.rule_id, {})
         threshold = config.get("threshold_pct", 25.0)
 
+        expected_folders = context.coverage_matrix.folders_list
+        initial_folder = expected_folders[0] if expected_folders else "vanilla"
+
         for f_health in context.folder_health:
-            if f_health.folder_name == "vanilla":
-                # Typically, vanilla is the baseline source folder so it won't be flagged for low coverage
+            if f_health.folder_name == initial_folder:
+                # Typically, initial folder is the baseline source folder so it won't be flagged for low coverage
                 continue
                 
             if f_health.coverage_score < threshold:

@@ -143,6 +143,7 @@ class CommitRepository(BaseRepository[Commit]):
             stmt = (
                 insert(Commit)
                 .values(
+                    id=commit_val.get("id"),
                     sha=commit_val["sha"],
                     repository_id=commit_val["repository_id"],
                     author_id=commit_val["author_id"],
@@ -158,9 +159,13 @@ class CommitRepository(BaseRepository[Commit]):
             if inserted_val:
                 inserted_commit_ids.append(inserted_val)
 
+        inserted_set = set(inserted_commit_ids)
+
         # 2. Insert Files (linked to commit_id)
         if files_data:
             for file_val in files_data:
+                if file_val["commit_id"] not in inserted_set:
+                    continue
                 stmt = (
                     insert(CommitFile)
                     .values(
@@ -178,6 +183,8 @@ class CommitRepository(BaseRepository[Commit]):
         # 3. Insert Jira Mappings (linked to commit_id)
         if jiras_data:
             for jira_val in jiras_data:
+                if jira_val["commit_id"] not in inserted_set:
+                    continue
                 stmt = (
                     insert(CommitJira)
                     .values(
