@@ -1,18 +1,19 @@
 import uuid
-from datetime import date, datetime, timezone
-import pytest
+from datetime import date
 from unittest.mock import AsyncMock, MagicMock
-from app.services.trend_analytics import TrendAnalyticsService
+
+import pytest
+
 from app.api.v1.trends import parse_period_to_days
 from app.core.result import ServiceResult
+from app.models.repository import Repository
+from app.models.snapshot import GovernanceSnapshot
+from app.repositories import repository_repo, snapshot_repo
 from app.schemas.coverage import CoverageSummary
-from app.schemas.violation import ViolationSummary
 from app.schemas.delay import DelayStatistics
 from app.schemas.folder import FolderHealthResult
-from app.models.repository import Repository
-from app.models.snapshot import GovernanceSnapshot, FolderHealthSnapshot
-from app.repositories import repository_repo, snapshot_repo
-
+from app.schemas.violation import ViolationSummary
+from app.services.trend_analytics import TrendAnalyticsService
 
 REPO_ID = uuid.UUID("9c3f3f3f-4f4f-4f4f-4f4f-4f4f4f4f4f4f")
 
@@ -34,7 +35,7 @@ async def test_capture_daily_snapshot(monkeypatch) -> None:
     db_mock.execute = AsyncMock()
     db_mock.commit = AsyncMock()
     db_mock.flush = AsyncMock()
-    
+
     # Mocks
     repo = Repository(id=REPO_ID, name="test-repo", folders=["vanilla", "MET"])
     monkeypatch.setattr(repository_repo, "get", AsyncMock(return_value=repo))

@@ -1,4 +1,3 @@
-import pytest
 from app.schemas.coverage import FolderCoverageDetail, JiraCoverageRow
 
 

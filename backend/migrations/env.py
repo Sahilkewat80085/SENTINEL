@@ -1,10 +1,9 @@
 import asyncio
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
-
-from alembic import context
 
 from app.config import settings
 from app.models import Base
@@ -63,7 +62,7 @@ async def run_migrations_online() -> None:
     """
     # Create config dict and map keys appropriately
     config_section = config.get_section(config.config_ini_section, {})
-    
+
     connectable = async_engine_from_config(
         config_section,
         prefix="sqlalchemy.",

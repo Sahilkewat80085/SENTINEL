@@ -1,18 +1,17 @@
 import uuid
-from datetime import datetime, timezone, timedelta
-import pytest
+from datetime import timedelta
 from unittest.mock import AsyncMock, MagicMock
-from app.services.governance_score import GovernanceScoreService
-from app.core.security import verify_password, get_password_hash, create_access_token, decode_token
+
+import pytest
+
 from app.core.result import ServiceResult
-from app.schemas.coverage import CoverageSummary
-from app.schemas.violation import ViolationSummary
-from app.schemas.delay import DelayStatistics
-from app.schemas.folder import FolderHealthResult
+from app.core.security import create_access_token, decode_token, get_password_hash, verify_password
 from app.models.repository import Repository
 from app.models.violation import RuleViolation
-from app.repositories import repository_repo, violation_repo
-
+from app.repositories import repository_repo
+from app.schemas.folder import FolderHealthResult
+from app.schemas.violation import ViolationSummary
+from app.services.governance_score import GovernanceScoreService
 
 REPO_ID = uuid.UUID("bc3f3f3f-4f4f-4f4f-4f4f-4f4f4f4f4f4f")
 
@@ -40,7 +39,7 @@ def test_security_helpers() -> None:
 async def test_composite_governance_score_math(monkeypatch) -> None:
     """Test composite governance rating arithmetic and penalty offsets."""
     db_mock = AsyncMock()
-    
+
     # Mock Repository
     repo = Repository(id=REPO_ID, name="test-repo", folders=["vanilla", "MET"])
     monkeypatch.setattr(repository_repo, "get", AsyncMock(return_value=repo))
@@ -84,7 +83,7 @@ async def test_composite_governance_score_math(monkeypatch) -> None:
 
     res = await service.compute_repository_score(db_mock, REPO_ID)
     assert res.is_success is True
-    
+
     score_detail = res.value
     assert score_detail.score == 82.0
     assert score_detail.grade == "B"

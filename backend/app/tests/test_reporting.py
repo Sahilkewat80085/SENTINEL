@@ -1,21 +1,25 @@
 import uuid
-import pytest
-from unittest.mock import AsyncMock, MagicMock
-from datetime import datetime, timezone
+from unittest.mock import AsyncMock
 
+import pytest
+
+from app.core.result import ServiceResult
+from app.models.repository import Repository
+from app.repositories import commit_repo, repository_repo
+from app.schemas.content import ContentVerificationResult, DriftReport
+from app.schemas.coverage import (
+    CoverageMatrix,
+    CoverageSummary,
+    FolderCoverageDetail,
+    JiraCoverageRow,
+)
+from app.schemas.dashboard import GovernanceScoreDetail
+from app.schemas.delay import DelayStatistics, FolderDelayRank
+from app.schemas.folder import FolderHealthResult
+from app.schemas.violation import ViolationSummary
+from app.services.reporting.chart_generator import ReportChartGenerator
 from app.services.reporting.excel_builder import ExcelReportBuilder
 from app.services.reporting.pdf_builder import PDFReportBuilder
-from app.services.reporting.chart_generator import ReportChartGenerator
-from app.core.result import ServiceResult
-from app.schemas.dashboard import GovernanceScoreDetail
-from app.schemas.folder import FolderHealthResult
-from app.schemas.coverage import CoverageSummary, CoverageMatrix, JiraCoverageRow, FolderCoverageDetail
-from app.schemas.delay import DelayStatistics, FolderDelayRank
-from app.schemas.content import DriftReport, ContentVerificationResult
-from app.schemas.violation import ViolationSummary
-from app.models.repository import Repository
-from app.repositories import repository_repo, commit_repo
-
 
 REPO_ID = uuid.UUID("bc3f3f3f-4f4f-4f4f-4f4f-4f4f4f4f4f4f")
 

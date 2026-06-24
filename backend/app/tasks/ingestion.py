@@ -1,5 +1,6 @@
 import asyncio
-from typing import Any, Dict, List
+from typing import Any
+
 from sqlalchemy import select
 
 from app.celery_app import celery_app
@@ -10,18 +11,18 @@ from app.services.commit_collector import CommitCollectorService
 
 
 @celery_app.task(name="tasks.sync_repository")
-def sync_repository_task(repository_id: str) -> Dict[str, Any]:
+def sync_repository_task(repository_id: str) -> dict[str, Any]:
     """Background task to sync commits for a specific repository by ID."""
     logger.info("Executing background sync task for repository", repo_id=repository_id)
 
-    async def _run() -> Dict[str, Any]:
+    async def _run() -> dict[str, Any]:
         async with get_db_context() as db:
             service = CommitCollectorService()
             result = await service.sync_repository(db, repository_id)
             if result.is_failure:
                 logger.error("Sync background task failed", repo_id=repository_id, error=str(result.error))
                 raise Exception(result.error.message)
-            
+
             # Post-sync hooks orchestrate view refreshes, file verification, rules evaluation, and snapshots
             from app.tasks.pipeline import trigger_repository_analysis_task
             trigger_repository_analysis_task.delay(repository_id)
@@ -33,11 +34,11 @@ def sync_repository_task(repository_id: str) -> Dict[str, Any]:
 
 
 @celery_app.task(name="tasks.sync_all_repositories")
-def sync_all_repositories_task() -> List[Dict[str, Any]]:
+def sync_all_repositories_task() -> list[dict[str, Any]]:
     """Scheduled task to execute sync on all active repositories in parallel/sequence."""
     logger.info("Starting batch incremental sync task for all active repositories")
 
-    async def _run() -> List[Dict[str, Any]]:
+    async def _run() -> list[dict[str, Any]]:
         async with get_db_context() as db:
             query = select(repository_repo.model).where(repository_repo.model.is_active == True)
             res = await db.execute(query)

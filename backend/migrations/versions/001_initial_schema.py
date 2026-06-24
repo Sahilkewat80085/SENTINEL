@@ -5,8 +5,8 @@ Revises:
 Create Date: 2026-06-06 20:30:00.000000
 
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
@@ -279,7 +279,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.execute("DROP MATERIALIZED VIEW IF EXISTS mv_coverage_matrix;")
     op.execute("DROP MATERIALIZED VIEW IF EXISTS mv_jira_summary;")
-    
+
     op.drop_table('audit_log')
     op.drop_table('users')
     op.drop_table('reports')

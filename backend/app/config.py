@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = Field(default="redis://localhost:6379/0")
 
     # GitHub Settings
-    GITHUB_PAT: Optional[str] = None
+    GITHUB_PAT: str | None = None
 
     # Security
     JWT_SECRET: str = Field(

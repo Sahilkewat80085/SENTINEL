@@ -1,5 +1,6 @@
 import asyncio
-from typing import Dict, Any
+from typing import Any
+
 from sqlalchemy import text
 
 from app.celery_app import celery_app
@@ -37,11 +38,11 @@ async def _refresh_materialized_views_helper(db) -> None:
 
 
 @celery_app.task(name="tasks.refresh_views")
-def refresh_views_task(repository_id: str) -> Dict[str, Any]:
+def refresh_views_task(repository_id: str) -> dict[str, Any]:
     """Background task to refresh all materialized views to update dashboards cache data."""
     logger.info("Executing background task to refresh materialized views", repo_id=repository_id)
 
-    async def _run() -> Dict[str, Any]:
+    async def _run() -> dict[str, Any]:
         async with get_db_context() as db:
             await _refresh_materialized_views_helper(db)
             return {"status": "success", "repository_id": repository_id}

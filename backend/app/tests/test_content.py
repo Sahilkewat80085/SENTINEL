@@ -1,4 +1,3 @@
-import pytest
 from app.services.content_verification import ContentVerificationService
 
 
@@ -17,7 +16,7 @@ def test_normalize_and_hash() -> None:
 
     assert hash_lf == hash_crlf
     assert hash_lf == hash_extra
-    
+
     # Matches hardcoded SHA256 of "key: value\nport: 8080"
     expected = "d7862ab5644b3e9dcb44b2f06ed0cade63e11282e81c5cf947367f30c324f0c6"
     assert hash_lf == expected
