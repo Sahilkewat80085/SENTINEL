@@ -1,6 +1,6 @@
-from typing import Optional
 import uuid
-from sqlalchemy import String, Integer, ForeignKey, UniqueConstraint
+
+from sqlalchemy import ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, UUIDPrimaryKeyMixin
@@ -15,7 +15,7 @@ class CommitFile(Base, UUIDPrimaryKeyMixin):
         ForeignKey("commits.id", ondelete="CASCADE"), nullable=False
     )
     file_path: Mapped[str] = mapped_column(String(1024), nullable=False, index=True)
-    folder: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)
+    folder: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     change_type: Mapped[str] = mapped_column(String(20), nullable=False)  # ADDED, MODIFIED, DELETED, RENAMED
 
     additions: Mapped[int] = mapped_column(Integer, default=0, server_default="0")

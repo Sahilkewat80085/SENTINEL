@@ -1,18 +1,23 @@
-from typing import Any, List, Optional
 import uuid
-from fastapi import APIRouter, Depends, Query, Path
+from typing import Any
+
+from fastapi import APIRouter, Depends, Path, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_current_user, get_db
 from app.models.user import User
 from app.schemas.common import ResponseEnvelope
-from app.schemas.violation import RuleViolationResponse, ViolationAcknowledgeRequest, ViolationSummary
+from app.schemas.violation import (
+    RuleViolationResponse,
+    ViolationAcknowledgeRequest,
+    ViolationSummary,
+)
 from app.services.exception_detection import ExceptionDetectionService
 
 router = APIRouter()
 
 
-@router.post("/evaluate", response_model=ResponseEnvelope[List[RuleViolationResponse]])
+@router.post("/evaluate", response_model=ResponseEnvelope[list[RuleViolationResponse]])
 async def evaluate_repository_violations(
     repository_id: uuid.UUID = Query(..., description="Context repository UUID"),
     db: AsyncSession = Depends(get_db),
@@ -26,13 +31,13 @@ async def evaluate_repository_violations(
     return ResponseEnvelope(success=True, data=result.value)
 
 
-@router.get("", response_model=ResponseEnvelope[List[RuleViolationResponse]])
+@router.get("", response_model=ResponseEnvelope[list[RuleViolationResponse]])
 async def get_repository_violations(
     repository_id: uuid.UUID = Query(..., description="Context repository UUID"),
-    severity: Optional[str] = Query(None, description="Filter by severity: CRITICAL | HIGH | MEDIUM | LOW"),
-    category: Optional[str] = Query(None, description="Filter by category: COVERAGE | DELAY | CONSISTENCY | PROPAGATION"),
-    is_acknowledged: Optional[bool] = Query(None, description="Filter by acknowledgement status"),
-    is_resolved: Optional[bool] = Query(None, description="Filter by resolution status"),
+    severity: str | None = Query(None, description="Filter by severity: CRITICAL | HIGH | MEDIUM | LOW"),
+    category: str | None = Query(None, description="Filter by category: COVERAGE | DELAY | CONSISTENCY | PROPAGATION"),
+    is_acknowledged: bool | None = Query(None, description="Filter by acknowledgement status"),
+    is_resolved: bool | None = Query(None, description="Filter by resolution status"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> Any:

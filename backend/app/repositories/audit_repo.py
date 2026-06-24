@@ -1,5 +1,6 @@
-from typing import Any, Dict, Optional
 import uuid
+from typing import Any
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.audit import AuditLog
@@ -16,12 +17,12 @@ class AuditLogRepository(BaseRepository[AuditLog]):
         self,
         db: AsyncSession,
         *,
-        user_id: Optional[uuid.UUID] = None,
+        user_id: uuid.UUID | None = None,
         action: str,
-        entity_type: Optional[str] = None,
-        entity_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
-        ip_address: Optional[str] = None,
+        entity_type: str | None = None,
+        entity_id: str | None = None,
+        details: dict[str, Any] | None = None,
+        ip_address: str | None = None,
     ) -> AuditLog:
         """Create and persist a new security/administrative audit log entry."""
         audit_entry = AuditLog(

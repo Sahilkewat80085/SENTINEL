@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class SentinelException(Exception):
@@ -8,7 +8,7 @@ class SentinelException(Exception):
         self,
         message: str,
         code: str = "INTERNAL_ERROR",
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(message)
         self.message = message
@@ -20,7 +20,7 @@ class DatabaseException(SentinelException):
     """Exception raised for database operations failure."""
 
     def __init__(
-        self, message: str, details: Optional[Dict[str, Any]] = None
+        self, message: str, details: dict[str, Any] | None = None
     ) -> None:
         super().__init__(message, code="DATABASE_ERROR", details=details)
 
@@ -32,7 +32,7 @@ class EntityNotFoundException(SentinelException):
         self,
         entity_name: str,
         entity_id: Any,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         message = f"{entity_name} with identity '{entity_id}' not found."
         super().__init__(message, code="NOT_FOUND", details=details)
@@ -45,7 +45,7 @@ class EntityAlreadyExistsException(SentinelException):
         self,
         entity_name: str,
         entity_id: Any,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         message = f"{entity_name} with identity '{entity_id}' already exists."
         super().__init__(message, code="ALREADY_EXISTS", details=details)
@@ -55,7 +55,7 @@ class ValidationException(SentinelException):
     """Exception raised when input validation fails."""
 
     def __init__(
-        self, message: str, details: Optional[Dict[str, Any]] = None
+        self, message: str, details: dict[str, Any] | None = None
     ) -> None:
         super().__init__(message, code="VALIDATION_ERROR", details=details)
 
@@ -67,7 +67,7 @@ class ExternalServiceException(SentinelException):
         self,
         service_name: str,
         message: str,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
             f"{service_name} API Error: {message}",
@@ -80,7 +80,7 @@ class AuthenticationException(SentinelException):
     """Exception raised when authentication fails."""
 
     def __init__(
-        self, message: str = "Invalid credentials", details: Optional[Dict[str, Any]] = None
+        self, message: str = "Invalid credentials", details: dict[str, Any] | None = None
     ) -> None:
         super().__init__(message, code="UNAUTHENTICATED", details=details)
 
@@ -89,6 +89,6 @@ class AuthorizationException(SentinelException):
     """Exception raised when a user is authenticated but not authorized."""
 
     def __init__(
-        self, message: str = "Permission denied", details: Optional[Dict[str, Any]] = None
+        self, message: str = "Permission denied", details: dict[str, Any] | None = None
     ) -> None:
         super().__init__(message, code="FORBIDDEN", details=details)

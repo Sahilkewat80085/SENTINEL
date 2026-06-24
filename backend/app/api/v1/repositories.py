@@ -1,10 +1,11 @@
-from typing import Any, Dict, List, Optional
 import uuid
+from typing import Any
+
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_current_user, get_db
 from app.core.exceptions import EntityNotFoundException, ValidationException
 from app.core.logging import logger
 from app.models.repository import Repository
@@ -18,7 +19,7 @@ from app.tasks.ingestion import sync_repository_task
 router = APIRouter()
 
 
-@router.get("", response_model=ResponseEnvelope[List[RepositoryResponse]])
+@router.get("", response_model=ResponseEnvelope[list[RepositoryResponse]])
 async def list_repositories(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -87,7 +88,7 @@ async def update_repository(
     return ResponseEnvelope(success=True, data=updated_repo)
 
 
-@router.delete("/{id}", response_model=ResponseEnvelope[Dict[str, Any]])
+@router.delete("/{id}", response_model=ResponseEnvelope[dict[str, Any]])
 async def delete_repository(
     id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
@@ -107,7 +108,7 @@ async def delete_repository(
     )
 
 
-@router.post("/{id}/sync", response_model=ResponseEnvelope[Dict[str, Any]])
+@router.post("/{id}/sync", response_model=ResponseEnvelope[dict[str, Any]])
 async def sync_repository(
     id: uuid.UUID,
     background: bool = Query(

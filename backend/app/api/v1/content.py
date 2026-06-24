@@ -1,9 +1,10 @@
-from typing import Any, Dict
 import uuid
-from fastapi import APIRouter, Depends, Query, status
+from typing import Any
+
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_current_user, get_db
 from app.models.user import User
 from app.schemas.common import ResponseEnvelope
 from app.schemas.content import DriftReport
@@ -12,7 +13,7 @@ from app.services.content_verification import ContentVerificationService
 router = APIRouter()
 
 
-@router.get("/verification", response_model=ResponseEnvelope[Dict[str, Any]])
+@router.get("/verification", response_model=ResponseEnvelope[dict[str, Any]])
 async def get_verification_summary(
     repository_id: uuid.UUID = Query(..., description="Context repository UUID"),
     db: AsyncSession = Depends(get_db),
@@ -40,7 +41,7 @@ async def get_drift_report(
     return ResponseEnvelope(success=True, data=result.value)
 
 
-@router.post("/verify", response_model=ResponseEnvelope[Dict[str, Any]])
+@router.post("/verify", response_model=ResponseEnvelope[dict[str, Any]])
 async def trigger_content_verification(
     repository_id: uuid.UUID = Query(..., description="Context repository UUID"),
     db: AsyncSession = Depends(get_db),

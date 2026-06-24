@@ -1,12 +1,12 @@
-from typing import Any, Dict, List, Optional, Tuple
-from sqlalchemy import text, select, and_
+from typing import Any
+
+from sqlalchemy import and_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logging import logger
+from app.models.author import Author
 from app.models.commit import Commit
 from app.models.commit_jira import CommitJira
-from app.models.commit_file import CommitFile
-from app.models.author import Author
 
 
 class JiraRepository:
@@ -32,11 +32,11 @@ class JiraRepository:
         self,
         db: AsyncSession,
         *,
-        repository_id: Optional[Any] = None,
-        search: Optional[str] = None,
+        repository_id: Any | None = None,
+        search: str | None = None,
         skip: int = 0,
         limit: int = 50,
-    ) -> Tuple[List[Dict[str, Any]], int]:
+    ) -> tuple[list[dict[str, Any]], int]:
         """Queries pre-computed summaries from the mv_jira_summary materialized view."""
         # Check if the view is populated by attempting a select. If it fails, refresh first.
         try:
@@ -93,7 +93,7 @@ class JiraRepository:
 
         return summaries, total
 
-    async def get_jira_timeline(self, db: AsyncSession, jira_id: str, repository_id: Any) -> List[Dict[str, Any]]:
+    async def get_jira_timeline(self, db: AsyncSession, jira_id: str, repository_id: Any) -> list[dict[str, Any]]:
         """Returns chronological list of commits for a Jira ID across target folders."""
         query = (
             select(Commit)

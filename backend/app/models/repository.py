@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Any, List, Optional
-from sqlalchemy import String, Integer, Boolean, DateTime
+
+from sqlalchemy import Boolean, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, UUIDPrimaryKeyMixin, TimestampMixin
+from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 
 
 class Repository(Base, UUIDPrimaryKeyMixin, TimestampMixin):
@@ -17,14 +17,14 @@ class Repository(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     default_branch: Mapped[str] = mapped_column(String(128), default="main", server_default="main")
 
     # JSONB columns for lists
-    folders: Mapped[List[str]] = mapped_column(JSONB, nullable=False, default=list, server_default="'[]'")
-    jira_patterns: Mapped[List[str]] = mapped_column(JSONB, nullable=False, default=list, server_default="'[]'")
+    folders: Mapped[list[str]] = mapped_column(JSONB, nullable=False, default=list, server_default="'[]'")
+    jira_patterns: Mapped[list[str]] = mapped_column(JSONB, nullable=False, default=list, server_default="'[]'")
 
     sync_mode: Mapped[str] = mapped_column(String(20), default="api", server_default="api")
     sync_interval: Mapped[int] = mapped_column(Integer, default=30, server_default="30")
 
-    last_synced_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    last_sync_sha: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_sync_sha: Mapped[str | None] = mapped_column(String(40), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
 
     # Relationships

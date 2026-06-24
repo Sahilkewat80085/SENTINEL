@@ -1,6 +1,7 @@
-from datetime import datetime
 import uuid
-from sqlalchemy import String, BigInteger, DateTime, ForeignKey, UniqueConstraint
+from datetime import datetime
+
+from sqlalchemy import BigInteger, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 

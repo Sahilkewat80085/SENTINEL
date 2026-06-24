@@ -1,11 +1,9 @@
-from typing import AsyncGenerator
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.core.database import get_db
-from app.core.security import decode_token
 from app.models.user import User
 from app.repositories.user_repo import user_repo
 

@@ -6,27 +6,23 @@ from __future__ import annotations
 
 import asyncio
 import uuid
-import random
-import hashlib
-from datetime import datetime, date, timedelta, timezone
+from datetime import date, timedelta
 
-from sqlalchemy import text, select
+from sqlalchemy import select, text
+
 from app.core.database import get_db_context
 from app.core.security import get_password_hash
-from app.models.repository import Repository
 from app.models.author import Author
-from app.models.commit import Commit
-from app.models.commit_file import CommitFile
-from app.models.commit_jira import CommitJira
+from app.models.repository import Repository
+from app.models.snapshot import FolderHealthSnapshot, GovernanceSnapshot
 from app.models.user import User
-from app.models.snapshot import GovernanceSnapshot, FolderHealthSnapshot
-from app.services.exception_detection import ExceptionDetectionService
 from app.services.content_verification import ContentVerificationService
+from app.services.exception_detection import ExceptionDetectionService
 
 
 async def seed_data():
     print("🛡 Seeding SENTINEL database with mock data...")
-    
+
     async with get_db_context() as db:
         # 1. Seed admin user if it does not exist
         res = await db.execute(text("SELECT id FROM users WHERE username = 'admin'"))
@@ -43,7 +39,7 @@ async def seed_data():
             )
             db.add(db_admin)
             await db.flush()
-            
+
         # 2. Seed default repository
         res = await db.execute(text("SELECT id FROM repositories WHERE name = 'SENTINEL'"))
         repo_id = res.scalar_one_or_none()
@@ -80,7 +76,7 @@ async def seed_data():
             {"name": "Bob Jones", "email": "bob@sentinel.local", "github_username": "bob_git"},
             {"name": "Charlie Miller", "email": "charlie@sentinel.local", "github_username": "charlie_git"},
         ]
-        
+
         author_objs = []
         for auth_data in authors_data:
             res = await db.execute(text("SELECT id FROM authors WHERE email = :email"), {"email": auth_data["email"]})
@@ -137,16 +133,16 @@ async def seed_data():
         # 8. Seed historical daily snapshots (30 days trend points)
         print("Seeding daily snapshots for historical graphs...")
         start_date = date.today() - timedelta(days=30)
-        
+
         for i in range(31):
             snap_date = start_date + timedelta(days=i)
             progress_ratio = i / 30.0
-            
+
             cov_pct = 70.0 + (progress_ratio * 15.0)  # 70% to 85%
             avg_delay = 8.5 - (progress_ratio * 3.5)  # 8.5 to 5.0 days
             crit_count = max(0, int(3 - (progress_ratio * 3)))
             health_avg = 72.0 + (progress_ratio * 18.0) # 72% to 90%
-            
+
             snap = GovernanceSnapshot(
                 repository_id=repo_id,
                 snapshot_date=snap_date,
@@ -164,7 +160,7 @@ async def seed_data():
                 }
             )
             db.add(snap)
-            
+
             for folder in ["backend", "frontend", "nginx", "monitoring"]:
                 if folder == "backend":
                     base_h = 95.0
@@ -172,7 +168,7 @@ async def seed_data():
                     base_h = 75.0 + (progress_ratio * 15.0)
                 else:
                     base_h = 85.0 + (progress_ratio * 10.0)
-                    
+
                 fsnap = FolderHealthSnapshot(
                     repository_id=repo_id,
                     snapshot_date=snap_date,

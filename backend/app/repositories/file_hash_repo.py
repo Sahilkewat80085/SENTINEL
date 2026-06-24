@@ -1,7 +1,8 @@
-from typing import Any, Dict, List, Optional, Tuple
-from sqlalchemy import select, and_, or_, text
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any
+
+from sqlalchemy import and_, select, text
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.file_hash import FileHash
 from app.repositories.base import BaseRepository
@@ -15,7 +16,7 @@ class FileHashRepository(BaseRepository[FileHash]):
 
     async def get_by_path_and_folder(
         self, db: AsyncSession, repository_id: Any, file_path: str, folder: str
-    ) -> Optional[FileHash]:
+    ) -> FileHash | None:
         """Fetch a specific file hash record."""
         query = select(self.model).where(
             and_(
@@ -27,7 +28,7 @@ class FileHashRepository(BaseRepository[FileHash]):
         res = await db.execute(query)
         return res.scalar_one_or_none()
 
-    async def bulk_upsert_hashes(self, db: AsyncSession, hashes_data: List[Dict[str, Any]]) -> None:
+    async def bulk_upsert_hashes(self, db: AsyncSession, hashes_data: list[dict[str, Any]]) -> None:
         """Bulk inserts or updates file hashes in a single transaction."""
         if not hashes_data:
             return
@@ -58,7 +59,7 @@ class FileHashRepository(BaseRepository[FileHash]):
                 )
                 await db.execute(stmt)
 
-    async def get_drift_analysis(self, db: AsyncSession, repository_id: Any) -> List[Dict[str, Any]]:
+    async def get_drift_analysis(self, db: AsyncSession, repository_id: Any) -> list[dict[str, Any]]:
         """Queries for files present in multiple folders that have different SHA256 hashes (drifted files)."""
         query = """
             SELECT file_path, COUNT(DISTINCT sha256_hash) AS distinct_hash_count, COUNT(folder) AS folder_count
@@ -83,12 +84,12 @@ class FileHashRepository(BaseRepository[FileHash]):
 
             folder_hashes = {dr.folder: dr.sha256_hash for dr in d_rows}
             folder_sizes = {dr.folder: dr.file_size for dr in d_rows}
-            
+
             # Find the majority hash (mode)
             hash_counts = {}
             for h in folder_hashes.values():
                 hash_counts[h] = hash_counts.get(h, 0) + 1
-            
+
             majority_hash = max(hash_counts, key=hash_counts.get)
             divergent_folders = [f for f, h in folder_hashes.items() if h != majority_hash]
 

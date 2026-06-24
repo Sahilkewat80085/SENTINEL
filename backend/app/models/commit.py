@@ -1,7 +1,7 @@
-from datetime import datetime
-from typing import Optional
 import uuid
-from sqlalchemy import String, Text, DateTime, ForeignKey, UniqueConstraint
+from datetime import datetime
+
+from sqlalchemy import DateTime, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -21,7 +21,7 @@ class Commit(Base, UUIDPrimaryKeyMixin):
         ForeignKey("authors.id"), nullable=False, index=True
     )
 
-    branch: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    branch: Mapped[str | None] = mapped_column(String(255), nullable=True)
     message: Mapped[str] = mapped_column(Text, nullable=False)
     commit_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
 

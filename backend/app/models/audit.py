@@ -1,7 +1,8 @@
-from datetime import datetime
-from typing import Any, Dict, Optional
 import uuid
-from sqlalchemy import String, ForeignKey, DateTime
+from datetime import datetime
+from typing import Any
+
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -14,16 +15,16 @@ class AuditLog(Base, UUIDPrimaryKeyMixin):
 
     __tablename__ = "audit_log"
 
-    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
     )
     action: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
 
-    entity_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    entity_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    entity_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    entity_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
-    details: Mapped[Dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict, server_default="'{}'")
-    ip_address: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)
+    details: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict, server_default="'{}'")
+    ip_address: Mapped[str | None] = mapped_column(String(45), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

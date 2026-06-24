@@ -1,18 +1,18 @@
-from datetime import date, timedelta
-from typing import Any, Dict, List, Optional
 import uuid
-from sqlalchemy import select, and_, delete
+from datetime import date, timedelta
+from typing import Any
+
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.snapshot import GovernanceSnapshot, FolderHealthSnapshot
-from app.schemas.trend import TrendPoint, FolderTrendPoint, ViolationTrendPoint
+from app.models.snapshot import FolderHealthSnapshot, GovernanceSnapshot
 
 
 class SnapshotRepository:
     """Repository handling database operations for daily snapshots and historical trends."""
 
     async def upsert_governance_snapshot(
-        self, db: AsyncSession, repository_id: uuid.UUID, snapshot_date: date, data: Dict[str, Any]
+        self, db: AsyncSession, repository_id: uuid.UUID, snapshot_date: date, data: dict[str, Any]
     ) -> GovernanceSnapshot:
         """Upserts a repository-wide governance snapshot for a specific date."""
         stmt = select(GovernanceSnapshot).where(
@@ -42,7 +42,7 @@ class SnapshotRepository:
         return snapshot
 
     async def upsert_folder_health_snapshot(
-        self, db: AsyncSession, repository_id: uuid.UUID, snapshot_date: date, folder_name: str, data: Dict[str, Any]
+        self, db: AsyncSession, repository_id: uuid.UUID, snapshot_date: date, folder_name: str, data: dict[str, Any]
     ) -> FolderHealthSnapshot:
         """Upserts an environment/folder specific health snapshot for a specific date."""
         stmt = select(FolderHealthSnapshot).where(
@@ -75,7 +75,7 @@ class SnapshotRepository:
 
     async def get_governance_snapshots(
         self, db: AsyncSession, repository_id: uuid.UUID, days: int = 30
-    ) -> List[GovernanceSnapshot]:
+    ) -> list[GovernanceSnapshot]:
         """Fetch repository daily snapshots sorted chronologically."""
         start_date = date.today() - timedelta(days=days)
         stmt = (
@@ -92,8 +92,8 @@ class SnapshotRepository:
         return list(res.scalars().all())
 
     async def get_folder_health_snapshots(
-        self, db: AsyncSession, repository_id: uuid.UUID, folder_name: Optional[str] = None, days: int = 30
-    ) -> List[FolderHealthSnapshot]:
+        self, db: AsyncSession, repository_id: uuid.UUID, folder_name: str | None = None, days: int = 30
+    ) -> list[FolderHealthSnapshot]:
         """Fetch folder health snapshots sorted chronologically."""
         start_date = date.today() - timedelta(days=days)
         filters = [

@@ -1,19 +1,25 @@
-from typing import Any, List
 import uuid
+from typing import Any
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user
-from app.models.user import User
+from app.api.deps import get_current_user, get_db
 from app.models.audit import AuditLog
+from app.models.user import User
 from app.schemas.common import ResponseEnvelope
-from app.schemas.dashboard import DashboardKPICard, GovernanceScoreDetail, RecentActivity, DashboardSummary
+from app.schemas.dashboard import (
+    DashboardKPICard,
+    DashboardSummary,
+    GovernanceScoreDetail,
+    RecentActivity,
+)
 from app.schemas.violation import RuleViolationResponse
-from app.services.folder_coverage import FolderCoverageService
-from app.services.merge_delay import MergeDelayService
-from app.services.governance_score import GovernanceScoreService
 from app.services.exception_detection import ExceptionDetectionService
+from app.services.folder_coverage import FolderCoverageService
+from app.services.governance_score import GovernanceScoreService
+from app.services.merge_delay import MergeDelayService
 
 router = APIRouter()
 
@@ -22,7 +28,7 @@ def _format_activity_description(log: AuditLog) -> str:
     """Formats raw audit logs into user-friendly description text."""
     action = log.action
     entity = log.entity_type
-    
+
     if action == "login_success":
         return "Administrator successfully logged in to the dashboard."
     elif action == "login_failed":
@@ -32,8 +38,8 @@ def _format_activity_description(log: AuditLog) -> str:
     elif action == "sync_failed":
         return "Repository synchronization task failed."
     elif action == "violation_acknowledged":
-        return f"Governance exception acknowledged by developer."
-    
+        return "Governance exception acknowledged by developer."
+
     return f"Action '{action}' executed on {entity or 'system'}."
 
 

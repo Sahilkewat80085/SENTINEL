@@ -1,5 +1,6 @@
-from typing import Optional
+
 import redis.asyncio as aioredis
+
 from app.config import settings
 from app.core.logging import logger
 
@@ -9,7 +10,7 @@ class RedisManager:
 
     def __init__(self) -> None:
         self.redis_url = settings.REDIS_URL
-        self._client: Optional[aioredis.Redis] = None
+        self._client: aioredis.Redis | None = None
 
     def get_client(self) -> aioredis.Redis:
         """Returns or creates the active Redis client instance."""

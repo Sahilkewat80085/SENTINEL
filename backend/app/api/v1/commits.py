@@ -1,28 +1,28 @@
-from typing import Any, List, Optional
 import uuid
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select, and_
-from sqlalchemy.orm import selectinload
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any
 
-from app.api.deps import get_db, get_current_user
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import and_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from app.api.deps import get_current_user, get_db
 from app.core.exceptions import EntityNotFoundException
 from app.models.commit import Commit
 from app.models.user import User
-from app.repositories.commit_repo import commit_repo
 from app.schemas.commit import CommitDetailResponse, CommitResponse
 from app.schemas.common import MetaData, ResponseEnvelope
 
 router = APIRouter()
 
 
-@router.get("", response_model=ResponseEnvelope[List[CommitResponse]])
+@router.get("", response_model=ResponseEnvelope[list[CommitResponse]])
 async def list_commits(
-    repository_id: Optional[uuid.UUID] = Query(None, description="Filter by repository UUID"),
-    branch: Optional[str] = Query(None, description="Filter by branch name"),
-    folder: Optional[str] = Query(None, description="Filter by configuration folder name"),
-    jira_id: Optional[str] = Query(None, description="Filter by Jira ticket ID"),
-    search: Optional[str] = Query(None, description="Search commit message or SHA"),
+    repository_id: uuid.UUID | None = Query(None, description="Filter by repository UUID"),
+    branch: str | None = Query(None, description="Filter by branch name"),
+    folder: str | None = Query(None, description="Filter by configuration folder name"),
+    jira_id: str | None = Query(None, description="Filter by Jira ticket ID"),
+    search: str | None = Query(None, description="Search commit message or SHA"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
@@ -38,16 +38,17 @@ async def list_commits(
     # Let's write the query with author selectinload.
     # Actually, we can fetch commits using selectinload inside this endpoint:
     query = select(Commit).options(selectinload(Commit.author))
-    
+
     # We will replicate the filter logic or just use a query select
     # Let's check how commit_repo.get_paginated_commits is written. It returns list of Commit.
     # To avoid DetachedInstanceError, let's load authors in the repo query or do it here.
     # In commit_repo.py, the query was: `query = select(self.model)`.
     # Let's adjust commit_repo or retrieve it directly here with selectinload.
     # Direct retrieval with selectinload here is extremely safe:
+    from sqlalchemy import func
+
     from app.models.commit_file import CommitFile
     from app.models.commit_jira import CommitJira
-    from sqlalchemy import func
 
     stmt = select(Commit).options(selectinload(Commit.author))
     count_stmt = select(func.count(Commit.id))
@@ -68,7 +69,7 @@ async def list_commits(
 
     if search:
         search_filter = or_ = and_(
-            (Commit.message.ilike(f"%{search}%") | Commit.sha.ilike(f"%{search}%"))
+            Commit.message.ilike(f"%{search}%") | Commit.sha.ilike(f"%{search}%")
         )
         # Wait, using SQLAlchemy operators is cleaner:
         from sqlalchemy import or_

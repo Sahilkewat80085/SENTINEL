@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Optional
 import uuid
-from sqlalchemy import select, and_
+
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.violation import RuleViolation
@@ -13,7 +13,7 @@ class ViolationRepository(BaseRepository[RuleViolation]):
     def __init__(self) -> None:
         super().__init__(RuleViolation)
 
-    async def get_active_for_repository(self, db: AsyncSession, repository_id: uuid.UUID) -> List[RuleViolation]:
+    async def get_active_for_repository(self, db: AsyncSession, repository_id: uuid.UUID) -> list[RuleViolation]:
         """Fetch all active (unresolved) violations for a given repository."""
         stmt = select(self.model).where(
             and_(
@@ -28,11 +28,11 @@ class ViolationRepository(BaseRepository[RuleViolation]):
         self,
         db: AsyncSession,
         repository_id: uuid.UUID,
-        severity: Optional[str] = None,
-        category: Optional[str] = None,
-        is_acknowledged: Optional[bool] = None,
-        is_resolved: Optional[bool] = None,
-    ) -> List[RuleViolation]:
+        severity: str | None = None,
+        category: str | None = None,
+        is_acknowledged: bool | None = None,
+        is_resolved: bool | None = None,
+    ) -> list[RuleViolation]:
         """Fetch violations with custom query filters for dashboard list views."""
         filters = [self.model.repository_id == repository_id]
 

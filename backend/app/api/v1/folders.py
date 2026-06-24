@@ -1,18 +1,19 @@
-from typing import Any, List
 import uuid
-from fastapi import APIRouter, Depends, Query, Path
+from typing import Any
+
+from fastapi import APIRouter, Depends, Path, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_current_user, get_db
 from app.models.user import User
 from app.schemas.common import ResponseEnvelope
-from app.schemas.folder import FolderHealthResult, FolderHealthRank, HeatmapCell
+from app.schemas.folder import FolderHealthRank, FolderHealthResult, HeatmapCell
 from app.services.folder_health import FolderHealthService
 
 router = APIRouter()
 
 
-@router.get("", response_model=ResponseEnvelope[List[FolderHealthResult]])
+@router.get("", response_model=ResponseEnvelope[list[FolderHealthResult]])
 async def get_all_folders_health(
     repository_id: uuid.UUID = Query(..., description="Context repository UUID"),
     db: AsyncSession = Depends(get_db),
@@ -26,7 +27,7 @@ async def get_all_folders_health(
     return ResponseEnvelope(success=True, data=result.value)
 
 
-@router.get("/ranking", response_model=ResponseEnvelope[List[FolderHealthRank]])
+@router.get("/ranking", response_model=ResponseEnvelope[list[FolderHealthRank]])
 async def get_folder_health_rankings(
     repository_id: uuid.UUID = Query(..., description="Context repository UUID"),
     db: AsyncSession = Depends(get_db),
@@ -40,7 +41,7 @@ async def get_folder_health_rankings(
     return ResponseEnvelope(success=True, data=result.value)
 
 
-@router.get("/heatmap", response_model=ResponseEnvelope[List[HeatmapCell]])
+@router.get("/heatmap", response_model=ResponseEnvelope[list[HeatmapCell]])
 async def get_folder_heatmap_data(
     repository_id: uuid.UUID = Query(..., description="Context repository UUID"),
     db: AsyncSession = Depends(get_db),
@@ -54,7 +55,7 @@ async def get_folder_heatmap_data(
     return ResponseEnvelope(success=True, data=result.value)
 
 
-@router.get("/weakest", response_model=ResponseEnvelope[List[FolderHealthResult]])
+@router.get("/weakest", response_model=ResponseEnvelope[list[FolderHealthResult]])
 async def get_weakest_folders(
     repository_id: uuid.UUID = Query(..., description="Context repository UUID"),
     limit: int = Query(3, description="Number of weakest folders to retrieve"),

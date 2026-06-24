@@ -1,9 +1,10 @@
-from typing import Any, List, Optional
 import uuid
+from typing import Any
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_current_user, get_db
 from app.models.user import User
 from app.schemas.common import MetaData, ResponseEnvelope
 from app.schemas.jira import JiraDetail, JiraSummary
@@ -12,10 +13,10 @@ from app.services.jira_aggregation import JiraAggregationService
 router = APIRouter()
 
 
-@router.get("", response_model=ResponseEnvelope[List[JiraSummary]])
+@router.get("", response_model=ResponseEnvelope[list[JiraSummary]])
 async def list_jiras(
-    repository_id: Optional[uuid.UUID] = Query(None, description="Filter by repository UUID"),
-    search: Optional[str] = Query(None, description="Search by Jira ID key"),
+    repository_id: uuid.UUID | None = Query(None, description="Filter by repository UUID"),
+    search: str | None = Query(None, description="Search by Jira ID key"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
@@ -24,7 +25,7 @@ async def list_jiras(
     """Retrieve paginated summaries of Jira issues detected in commits."""
     skip = (page - 1) * page_size
     service = JiraAggregationService()
-    
+
     result = await service.get_jira_list(
         db, repository_id=repository_id, search=search, skip=skip, limit=page_size
     )

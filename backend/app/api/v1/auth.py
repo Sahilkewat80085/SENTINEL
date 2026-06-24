@@ -1,16 +1,17 @@
 from datetime import datetime, timezone
 from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user
-from app.core.security import verify_password, create_access_token
+from app.api.deps import get_current_user, get_db
+from app.core.security import create_access_token, verify_password
 from app.models.user import User
-from app.repositories.user_repo import user_repo
 from app.repositories.audit_repo import audit_repo
-from app.schemas.common import ResponseEnvelope
+from app.repositories.user_repo import user_repo
 from app.schemas.auth import Token, UserResponse
+from app.schemas.common import ResponseEnvelope
 
 router = APIRouter()
 

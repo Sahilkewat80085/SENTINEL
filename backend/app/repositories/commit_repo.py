@@ -1,10 +1,11 @@
-from typing import Any, Dict, List, Optional, Tuple
-from sqlalchemy import select, and_, or_, func
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.dialects.postgresql import insert
+from typing import Any
 
-from app.models.commit import Commit
+from sqlalchemy import and_, func, or_, select
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.author import Author
+from app.models.commit import Commit
 from app.models.commit_file import CommitFile
 from app.models.commit_jira import CommitJira
 from app.repositories.base import BaseRepository
@@ -16,7 +17,7 @@ class CommitRepository(BaseRepository[Commit]):
     def __init__(self) -> None:
         super().__init__(Commit)
 
-    async def get_by_sha(self, db: AsyncSession, sha: str, repository_id: Any) -> Optional[Commit]:
+    async def get_by_sha(self, db: AsyncSession, sha: str, repository_id: Any) -> Commit | None:
         """Fetch a specific commit by SHA and repository context."""
         query = select(self.model).where(
             and_(self.model.sha == sha, self.model.repository_id == repository_id)
@@ -26,7 +27,7 @@ class CommitRepository(BaseRepository[Commit]):
 
     async def get_commits_for_repository(
         self, db: AsyncSession, repository_id: Any, limit: int = 100
-    ) -> List[Commit]:
+    ) -> list[Commit]:
         """Fetch recent commits for a specific repository up to a limit."""
         commits, _ = await self.get_paginated_commits(db, repository_id=repository_id, limit=limit)
         return commits
@@ -35,14 +36,14 @@ class CommitRepository(BaseRepository[Commit]):
         self,
         db: AsyncSession,
         *,
-        repository_id: Optional[Any] = None,
-        branch: Optional[str] = None,
-        folder: Optional[str] = None,
-        jira_id: Optional[str] = None,
-        search: Optional[str] = None,
+        repository_id: Any | None = None,
+        branch: str | None = None,
+        folder: str | None = None,
+        jira_id: str | None = None,
+        search: str | None = None,
         skip: int = 0,
         limit: int = 50,
-    ) -> Tuple[List[Commit], int]:
+    ) -> tuple[list[Commit], int]:
         """Query commits using customizable pagination and filters."""
         query = select(self.model)
         count_query = select(func.count(self.model.id))
@@ -87,7 +88,7 @@ class CommitRepository(BaseRepository[Commit]):
 
         return commits, total
 
-    async def bulk_upsert_authors(self, db: AsyncSession, authors_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    async def bulk_upsert_authors(self, db: AsyncSession, authors_data: list[dict[str, Any]]) -> dict[str, Any]:
         """Bulk inserts authors and maps their email address to author IDs.
 
         This uses PostgreSQL ON CONFLICT DO UPDATE to ensure all authors are created or updated.
@@ -125,10 +126,10 @@ class CommitRepository(BaseRepository[Commit]):
     async def bulk_insert_commits_and_relations(
         self,
         db: AsyncSession,
-        commits_data: List[Dict[str, Any]],
-        files_data: List[Dict[str, Any]],
-        jiras_data: List[Dict[str, Any]],
-    ) -> List[Any]:
+        commits_data: list[dict[str, Any]],
+        files_data: list[dict[str, Any]],
+        jiras_data: list[dict[str, Any]],
+    ) -> list[Any]:
         """Bulk inserts commits, files, and Jira associations.
 
         Avoids duplicates by using PostgreSQL conflict resolution strategies.

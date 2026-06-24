@@ -1,9 +1,10 @@
-from typing import Any, List
 import uuid
+from typing import Any
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_current_user, get_db
 from app.models.user import User
 from app.schemas.common import ResponseEnvelope
 from app.schemas.coverage import CoverageMatrix, CoverageSummary, MissingMerge
@@ -40,7 +41,7 @@ async def get_coverage_matrix(
     return ResponseEnvelope(success=True, data=result.value)
 
 
-@router.get("/missing", response_model=ResponseEnvelope[List[MissingMerge]])
+@router.get("/missing", response_model=ResponseEnvelope[list[MissingMerge]])
 async def get_missing_merges(
     repository_id: uuid.UUID = Query(..., description="Context repository UUID"),
     db: AsyncSession = Depends(get_db),

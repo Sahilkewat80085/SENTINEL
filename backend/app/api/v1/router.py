@@ -1,17 +1,17 @@
 from fastapi import APIRouter
 
+from app.api.v1.auth import router as auth_router
 from app.api.v1.commits import router as commits_router
-from app.api.v1.repositories import router as repositories_router
-from app.api.v1.jiras import router as jiras_router
-from app.api.v1.coverage import router as coverage_router
 from app.api.v1.content import router as content_router
+from app.api.v1.coverage import router as coverage_router
+from app.api.v1.dashboard import router as dashboard_router
 from app.api.v1.delays import router as delays_router
 from app.api.v1.folders import router as folders_router
-from app.api.v1.violations import router as violations_router
-from app.api.v1.trends import router as trends_router
-from app.api.v1.auth import router as auth_router
-from app.api.v1.dashboard import router as dashboard_router
+from app.api.v1.jiras import router as jiras_router
 from app.api.v1.reports import router as reports_router
+from app.api.v1.repositories import router as repositories_router
+from app.api.v1.trends import router as trends_router
+from app.api.v1.violations import router as violations_router
 
 api_router = APIRouter()
 

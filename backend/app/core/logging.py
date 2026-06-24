@@ -1,13 +1,15 @@
 import logging
 import sys
-from typing import Any, Dict
+from typing import Any
+
 import structlog
+
 from app.config import settings
 
 
 def add_environment_info(
-    logger: Any, method_name: str, event_dict: Dict[str, Any]
-) -> Dict[str, Any]:
+    logger: Any, method_name: str, event_dict: dict[str, Any]
+) -> dict[str, Any]:
     """Custom processor to add environment info to log entries."""
     event_dict["env"] = settings.ENVIRONMENT
     return event_dict

@@ -1,10 +1,11 @@
 import os
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List
 import uuid
+from datetime import datetime, timedelta, timezone
+from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_db
@@ -15,17 +16,16 @@ from app.schemas.common import ResponseEnvelope
 from app.schemas.report import ReportResponse
 from app.services.reporting.excel_builder import ExcelReportBuilder
 from app.services.reporting.pdf_builder import PDFReportBuilder
-from pydantic import BaseModel
 
 router = APIRouter()
 
 
 class ReportGenerateRequest(BaseModel):
     repository_id: uuid.UUID
-    config: Dict[str, Any] = {}
+    config: dict[str, Any] = {}
 
 
-@router.post("/excel", response_model=ResponseEnvelope[Dict[str, Any]])
+@router.post("/excel", response_model=ResponseEnvelope[dict[str, Any]])
 async def generate_excel_report(
     body: ReportGenerateRequest,
     db: AsyncSession = Depends(get_db),
@@ -74,7 +74,7 @@ async def generate_excel_report(
         )
 
 
-@router.post("/pdf", response_model=ResponseEnvelope[Dict[str, Any]])
+@router.post("/pdf", response_model=ResponseEnvelope[dict[str, Any]])
 async def generate_pdf_report(
     body: ReportGenerateRequest,
     db: AsyncSession = Depends(get_db),
@@ -123,7 +123,7 @@ async def generate_pdf_report(
         )
 
 
-@router.get("", response_model=ResponseEnvelope[List[ReportResponse]])
+@router.get("", response_model=ResponseEnvelope[list[ReportResponse]])
 async def list_reports(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),

@@ -1,4 +1,5 @@
-from typing import Generic, Optional, TypeVar, Union
+from typing import Generic, TypeVar
+
 from app.core.exceptions import SentinelException
 
 T = TypeVar("T")
@@ -9,8 +10,8 @@ class ServiceResult(Generic[T]):
 
     def __init__(
         self,
-        value: Optional[T] = None,
-        error: Optional[SentinelException] = None,
+        value: T | None = None,
+        error: SentinelException | None = None,
         is_success: bool = True,
     ) -> None:
         self._value = value

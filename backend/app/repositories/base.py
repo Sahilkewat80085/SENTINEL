@@ -1,4 +1,5 @@
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from typing import Any, Generic, TypeVar
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,22 +11,22 @@ ModelType = TypeVar("ModelType", bound=Base)
 class BaseRepository(Generic[ModelType]):
     """Generic async CRUD repository base class."""
 
-    def __init__(self, model: Type[ModelType]) -> None:
+    def __init__(self, model: type[ModelType]) -> None:
         self.model = model
 
-    async def get(self, db: AsyncSession, id: Any) -> Optional[ModelType]:
+    async def get(self, db: AsyncSession, id: Any) -> ModelType | None:
         """Fetch a single record by its primary key ID."""
         return await db.get(self.model, id)
 
     async def get_multi(
         self, db: AsyncSession, *, skip: int = 0, limit: int = 100
-    ) -> List[ModelType]:
+    ) -> list[ModelType]:
         """Fetch multiple records with offset pagination."""
         query = select(self.model).offset(skip).limit(limit)
         result = await db.execute(query)
         return list(result.scalars().all())
 
-    async def create(self, db: AsyncSession, *, obj_in: Dict[str, Any]) -> ModelType:
+    async def create(self, db: AsyncSession, *, obj_in: dict[str, Any]) -> ModelType:
         """Create and persist a new model instance."""
         db_obj = self.model(**obj_in)
         db.add(db_obj)
@@ -37,7 +38,7 @@ class BaseRepository(Generic[ModelType]):
         db: AsyncSession,
         *,
         db_obj: ModelType,
-        obj_in: Union[Dict[str, Any], Any],
+        obj_in: dict[str, Any] | Any,
     ) -> ModelType:
         """Update fields on an existing model instance."""
         if isinstance(obj_in, dict):
@@ -53,7 +54,7 @@ class BaseRepository(Generic[ModelType]):
         await db.flush()
         return db_obj
 
-    async def remove(self, db: AsyncSession, *, id: Any) -> Optional[ModelType]:
+    async def remove(self, db: AsyncSession, *, id: Any) -> ModelType | None:
         """Delete a record by its primary key ID."""
         obj = await db.get(self.model, id)
         if obj:

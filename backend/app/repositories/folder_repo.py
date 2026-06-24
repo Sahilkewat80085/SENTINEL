@@ -1,4 +1,5 @@
-from typing import Any, Dict, List
+from typing import Any
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,7 +24,7 @@ class FolderRepository:
                 logger.error("Failed standard refresh of mv_coverage_matrix", error=str(ex))
                 await db.rollback()
 
-    async def get_coverage_matrix(self, db: AsyncSession, repository_id: Any) -> List[Dict[str, Any]]:
+    async def get_coverage_matrix(self, db: AsyncSession, repository_id: Any) -> list[dict[str, Any]]:
         """Queries the coverage matrix for a repository from mv_coverage_matrix."""
         try:
             test_query = text("SELECT 1 FROM mv_coverage_matrix LIMIT 1")
@@ -50,7 +51,7 @@ class FolderRepository:
             })
         return results
 
-    async def get_missing_merges_raw(self, db: AsyncSession, repository_id: Any) -> List[Dict[str, Any]]:
+    async def get_missing_merges_raw(self, db: AsyncSession, repository_id: Any) -> list[dict[str, Any]]:
         """Queries rows that are missing merges (expected but not merged) from mv_coverage_matrix."""
         try:
             test_query = text("SELECT 1 FROM mv_coverage_matrix LIMIT 1")

@@ -1,7 +1,8 @@
-from datetime import date
-from typing import Any, Dict
 import uuid
-from sqlalchemy import Date, Integer, Numeric, String, ForeignKey, UniqueConstraint
+from datetime import date
+from typing import Any
+
+from sqlalchemy import Date, ForeignKey, Integer, Numeric, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -27,7 +28,7 @@ class GovernanceSnapshot(Base, UUIDPrimaryKeyMixin):
     avg_delay_days: Mapped[float] = mapped_column(Numeric(8, 2), nullable=True)
     governance_score: Mapped[float] = mapped_column(Numeric(5, 2), nullable=True)
 
-    metadata_info: Mapped[Dict[str, Any]] = mapped_column(
+    metadata_info: Mapped[dict[str, Any]] = mapped_column(
         "metadata", JSONB, nullable=False, default=dict, server_default="'{}'"
     )
 
