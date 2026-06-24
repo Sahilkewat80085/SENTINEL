@@ -175,7 +175,12 @@ All defaults are pre-configured in `docker-compose.yml`. You only need to overri
 | `JWT_SECRET` | *(hardcoded)* | Change for production security |
 | `DATABASE_URL` | internal | PostgreSQL connection string |
 
-To set `GITHUB_PAT`:
+### 🔑 For Repositories with >10k Commits (GitHub Rate Limits)
+
+When scanning large repositories with more than 10,000 commits, you will quickly hit GitHub's unauthenticated API rate limit (60 requests/hour). 
+
+To avoid this and unlock 5,000 requests/hour, you must generate a GitHub Personal Access Token (PAT) and pass it to the docker containers:
+
 ```bash
 # Windows
 set GITHUB_PAT=ghp_your_token_here
