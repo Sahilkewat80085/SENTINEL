@@ -1,7 +1,8 @@
-from datetime import datetime
-from typing import Any, Dict, Optional
 import uuid
-from pydantic import BaseModel, Field, ConfigDict
+from datetime import datetime
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RuleViolationResponse(BaseModel):
@@ -14,23 +15,23 @@ class RuleViolationResponse(BaseModel):
     rule_id: str
     severity: str
     category: str
-    jira_id: Optional[str] = None
-    folder_name: Optional[str] = None
-    file_path: Optional[str] = None
+    jira_id: str | None = None
+    folder_name: str | None = None
+    file_path: str | None = None
     description: str
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: dict[str, Any] = Field(default_factory=dict)
     is_acknowledged: bool
-    acknowledged_by: Optional[str] = None
-    acknowledged_at: Optional[datetime] = None
-    acknowledge_note: Optional[str] = None
+    acknowledged_by: str | None = None
+    acknowledged_at: datetime | None = None
+    acknowledge_note: str | None = None
     detected_at: datetime
-    resolved_at: Optional[datetime] = None
+    resolved_at: datetime | None = None
 
 
 class ViolationAcknowledgeRequest(BaseModel):
     """Input parameters to acknowledge a governance violation."""
 
-    acknowledge_note: Optional[str] = Field(None, description="Optional developer comments on the acknowledgement justification")
+    acknowledge_note: str | None = Field(None, description="Optional developer comments on the acknowledgement justification")
 
 
 class ViolationSummary(BaseModel):
@@ -45,4 +46,4 @@ class ViolationSummary(BaseModel):
     low_count: int
     acknowledged_count: int
     unacknowledged_count: int
-    by_category: Dict[str, int] = Field(default_factory=dict)
+    by_category: dict[str, int] = Field(default_factory=dict)

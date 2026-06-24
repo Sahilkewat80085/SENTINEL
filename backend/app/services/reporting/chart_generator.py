@@ -5,7 +5,6 @@ Generates beautiful charts using matplotlib for reports.
 from __future__ import annotations
 
 import io
-from typing import List, Dict, Any
 
 try:
     import matplotlib
@@ -77,7 +76,7 @@ class ReportChartGenerator:
         buf.seek(0)
         return buf.read()
 
-    def generate_health_trend_chart(self, dates: List[str], values: List[float]) -> bytes | None:
+    def generate_health_trend_chart(self, dates: list[str], values: list[float]) -> bytes | None:
         """Generate a line chart for historical health trends."""
         if not HAS_MATPLOTLIB:
             return None

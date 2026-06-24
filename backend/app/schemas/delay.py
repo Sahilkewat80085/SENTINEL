@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Dict, List, Optional
-from pydantic import BaseModel, Field, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class FolderDelayRank(BaseModel):
@@ -19,10 +19,10 @@ class DelayResult(BaseModel):
 
     jira_id: str
     initial_commit_date: datetime
-    folder_merge_dates: Dict[str, Optional[datetime]] = Field(
+    folder_merge_dates: dict[str, datetime | None] = Field(
         ..., description="Dates when the ticket was merged to each folder"
     )
-    propagation_delay_days: Optional[float] = Field(
+    propagation_delay_days: float | None = Field(
         None, description="Time in days between initial commit and latest merge"
     )
     status: str = Field(..., description="HEALTHY | WARNING | CRITICAL")
@@ -33,7 +33,7 @@ class DelayStatistics(BaseModel):
 
     overall_avg_delay_days: float
     overall_max_delay_days: float
-    status_distribution: Dict[str, int] = Field(
+    status_distribution: dict[str, int] = Field(
         ..., description="Distribution count (e.g. {'HEALTHY': 10, ...})"
     )
-    folder_rankings: List[FolderDelayRank] = Field(default_factory=list)
+    folder_rankings: list[FolderDelayRank] = Field(default_factory=list)

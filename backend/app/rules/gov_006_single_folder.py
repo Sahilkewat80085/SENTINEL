@@ -1,4 +1,4 @@
-from typing import List
+
 from app.rules.base import GovernanceRule, RuleContext, RuleViolationInfo
 
 
@@ -21,7 +21,7 @@ class SingleFolderRule(GovernanceRule):
     def category(self) -> str:
         return "COVERAGE"
 
-    def evaluate(self, context: RuleContext) -> List[RuleViolationInfo]:
+    def evaluate(self, context: RuleContext) -> list[RuleViolationInfo]:
         violations = []
         expected_folders = context.coverage_matrix.folders_list
         if not expected_folders:

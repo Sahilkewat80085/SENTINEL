@@ -1,6 +1,6 @@
-from datetime import datetime
-from typing import Optional
 import uuid
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -14,7 +14,7 @@ class Token(BaseModel):
 class TokenPayload(BaseModel):
     """Subject data contained inside standard JWT token payloads."""
 
-    sub: Optional[str] = None
+    sub: str | None = None
 
 
 class UserLogin(BaseModel):
@@ -35,4 +35,4 @@ class UserResponse(BaseModel):
     role: str
     is_active: bool
     created_at: datetime
-    last_login_at: Optional[datetime] = None
+    last_login_at: datetime | None = None

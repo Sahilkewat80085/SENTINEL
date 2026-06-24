@@ -1,4 +1,4 @@
-from typing import List
+
 from app.rules.base import GovernanceRule, RuleContext, RuleViolationInfo
 
 
@@ -21,20 +21,20 @@ class VanillaOnlyRule(GovernanceRule):
     def category(self) -> str:
         return "COVERAGE"
 
-    def evaluate(self, context: RuleContext) -> List[RuleViolationInfo]:
+    def evaluate(self, context: RuleContext) -> list[RuleViolationInfo]:
         violations = []
         expected_folders = context.coverage_matrix.folders_list
-        
+
         # If there's only one folder or no folders, propagation is not expected/possible
         if len(expected_folders) <= 1:
             return violations
-        
+
         initial_folder = expected_folders[0]
 
         for row in context.coverage_matrix.rows:
             initial_merged = False
             others_merged = False
-            
+
             for f_detail in row.folders:
                 if f_detail.folder_name == initial_folder:
                     if f_detail.is_merged:

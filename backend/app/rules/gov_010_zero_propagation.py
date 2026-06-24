@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import List
+
 from app.rules.base import GovernanceRule, RuleContext, RuleViolationInfo
 from app.rules.registry import get_rules_config
 
@@ -23,7 +23,7 @@ class ZeroPropagationRule(GovernanceRule):
     def category(self) -> str:
         return "PROPAGATION"
 
-    def evaluate(self, context: RuleContext) -> List[RuleViolationInfo]:
+    def evaluate(self, context: RuleContext) -> list[RuleViolationInfo]:
         violations = []
         config = get_rules_config().get(self.rule_id, {})
         threshold = config.get("threshold_days", 14.0)
@@ -31,12 +31,12 @@ class ZeroPropagationRule(GovernanceRule):
 
         for d in context.delays:
             merged_folders = [f for f, m_date in d.folder_merge_dates.items() if m_date is not None]
-            
+
             if len(merged_folders) == 1:
                 init_date = d.initial_commit_date
                 if init_date.tzinfo is None:
                     init_date = init_date.replace(tzinfo=timezone.utc)
-                
+
                 elapsed_days = (now - init_date).total_seconds() / 86400.0
                 if elapsed_days >= threshold:
                     folder_name = merged_folders[0]

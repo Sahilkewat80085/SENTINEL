@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Generic, TypeVar
+
 from pydantic import BaseModel, Field
 
 T = TypeVar("T")
@@ -19,16 +20,16 @@ class ResponseEnvelope(BaseModel, Generic[T]):
     """Standard API response wrapper envelope matching system architecture specifications."""
 
     success: bool
-    data: Optional[T] = None
-    meta: Optional[MetaData] = None
-    errors: Optional[List[Dict[str, Any]]] = None  # Wait, dict type needs to import Dict or use dict
+    data: T | None = None
+    meta: MetaData | None = None
+    errors: list[dict[str, Any]] | None = None  # Wait, dict type needs to import Dict or use dict
 
 
 class ErrorDetail(BaseModel):
     """Specific validation/runtime error detail item."""
 
     code: str
-    field: Optional[str] = None
+    field: str | None = None
     message: str
 
 
@@ -38,7 +39,7 @@ class ErrorResponseEnvelope(BaseModel):
     success: bool = False
     data: None = None
     meta: None = None
-    errors: List[ErrorDetail]
+    errors: list[ErrorDetail]
 
 
 # Common query parameter schemas
@@ -52,5 +53,5 @@ class PaginationParams(BaseModel):
 class DateRangeParams(BaseModel):
     """Basic date filtering criteria."""
 
-    date_from: Optional[datetime] = None
-    date_to: Optional[datetime] = None
+    date_from: datetime | None = None
+    date_to: datetime | None = None

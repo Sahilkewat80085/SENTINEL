@@ -1,7 +1,7 @@
-from datetime import datetime
-from typing import List, Optional
 import uuid
-from pydantic import BaseModel, Field, ConfigDict
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class JiraSummary(BaseModel):
@@ -15,7 +15,7 @@ class JiraSummary(BaseModel):
     author_count: int
     first_seen: datetime
     last_updated: datetime
-    touched_folders: List[str] = Field(default_factory=list)
+    touched_folders: list[str] = Field(default_factory=list)
     folder_count: int
     status: str = Field(..., description="ACTIVE | STALE | DORMANT | ARCHIVED")
 
@@ -28,7 +28,7 @@ class JiraTimelineItem(BaseModel):
     commit_date: datetime
     author_name: str
     author_email: str
-    folders: List[str]
+    folders: list[str]
     files_count: int
 
 
@@ -36,4 +36,4 @@ class JiraDetail(BaseModel):
     """Comprehensive details for a Jira ticket including its timeline."""
 
     summary: JiraSummary
-    timeline: List[JiraTimelineItem]
+    timeline: list[JiraTimelineItem]

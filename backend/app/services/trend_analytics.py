@@ -1,7 +1,8 @@
-from datetime import date, timezone, datetime
-from typing import Any, Dict, List, Optional
 import uuid
-from sqlalchemy import select, func
+from datetime import date
+from typing import Any
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import EntityNotFoundException
@@ -10,11 +11,11 @@ from app.core.result import ServiceResult
 from app.models.commit import Commit
 from app.repositories import repository_repo
 from app.repositories.snapshot_repo import snapshot_repo
-from app.schemas.trend import TrendPoint, FolderTrendPoint, ViolationTrendPoint
-from app.services.folder_coverage import FolderCoverageService
-from app.services.merge_delay import MergeDelayService
-from app.services.folder_health import FolderHealthService
+from app.schemas.trend import FolderTrendPoint, TrendPoint, ViolationTrendPoint
 from app.services.exception_detection import ExceptionDetectionService
+from app.services.folder_coverage import FolderCoverageService
+from app.services.folder_health import FolderHealthService
+from app.services.merge_delay import MergeDelayService
 
 
 class TrendAnalyticsService:
@@ -22,10 +23,10 @@ class TrendAnalyticsService:
 
     def __init__(
         self,
-        coverage_service: Optional[FolderCoverageService] = None,
-        delay_service: Optional[MergeDelayService] = None,
-        health_service: Optional[FolderHealthService] = None,
-        violation_service: Optional[ExceptionDetectionService] = None,
+        coverage_service: FolderCoverageService | None = None,
+        delay_service: MergeDelayService | None = None,
+        health_service: FolderHealthService | None = None,
+        violation_service: ExceptionDetectionService | None = None,
     ) -> None:
         self.coverage_service = coverage_service or FolderCoverageService()
         self.delay_service = delay_service or MergeDelayService()
@@ -33,8 +34,8 @@ class TrendAnalyticsService:
         self.violation_service = violation_service or ExceptionDetectionService()
 
     async def capture_daily_snapshot(
-        self, db: AsyncSession, repository_id: uuid.UUID, snapshot_date: Optional[date] = None
-    ) -> ServiceResult[Dict[str, Any]]:
+        self, db: AsyncSession, repository_id: uuid.UUID, snapshot_date: date | None = None
+    ) -> ServiceResult[dict[str, Any]]:
         """Aggregates all system metrics and records/upserts snapshot entries for the specified date."""
         repo = await repository_repo.get(db, repository_id)
         if not repo:
@@ -120,7 +121,7 @@ class TrendAnalyticsService:
 
     async def get_coverage_trend(
         self, db: AsyncSession, repository_id: uuid.UUID, days: int = 30
-    ) -> ServiceResult[List[TrendPoint]]:
+    ) -> ServiceResult[list[TrendPoint]]:
         """Compiles historical coverage percentage points."""
         snapshots = await snapshot_repo.get_governance_snapshots(db, repository_id, days=days)
         points = [
@@ -134,7 +135,7 @@ class TrendAnalyticsService:
 
     async def get_health_trend(
         self, db: AsyncSession, repository_id: uuid.UUID, days: int = 30
-    ) -> ServiceResult[List[TrendPoint]]:
+    ) -> ServiceResult[list[TrendPoint]]:
         """Compiles overall historical repository health/governance score points."""
         snapshots = await snapshot_repo.get_governance_snapshots(db, repository_id, days=days)
         points = [
@@ -148,7 +149,7 @@ class TrendAnalyticsService:
 
     async def get_delay_trend(
         self, db: AsyncSession, repository_id: uuid.UUID, days: int = 30
-    ) -> ServiceResult[List[TrendPoint]]:
+    ) -> ServiceResult[list[TrendPoint]]:
         """Compiles average merge delays history."""
         snapshots = await snapshot_repo.get_governance_snapshots(db, repository_id, days=days)
         points = [
@@ -162,7 +163,7 @@ class TrendAnalyticsService:
 
     async def get_violation_trend(
         self, db: AsyncSession, repository_id: uuid.UUID, days: int = 30
-    ) -> ServiceResult[List[ViolationTrendPoint]]:
+    ) -> ServiceResult[list[ViolationTrendPoint]]:
         """Compiles daily counts of unresolved violations categorised by severity levels."""
         snapshots = await snapshot_repo.get_governance_snapshots(db, repository_id, days=days)
         points = []
@@ -185,8 +186,8 @@ class TrendAnalyticsService:
         return ServiceResult.success(points)
 
     async def get_folder_health_trends(
-        self, db: AsyncSession, repository_id: uuid.UUID, folder_name: Optional[str] = None, days: int = 30
-    ) -> ServiceResult[List[FolderTrendPoint]]:
+        self, db: AsyncSession, repository_id: uuid.UUID, folder_name: str | None = None, days: int = 30
+    ) -> ServiceResult[list[FolderTrendPoint]]:
         """Compiles folder-specific health score parameters history."""
         snapshots = await snapshot_repo.get_folder_health_snapshots(db, repository_id, folder_name=folder_name, days=days)
         points = [

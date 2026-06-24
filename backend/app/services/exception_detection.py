@@ -1,23 +1,23 @@
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
 import uuid
-from sqlalchemy import select, func, text
+from datetime import datetime, timezone
+
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import EntityNotFoundException
 from app.core.logging import logger
 from app.core.result import ServiceResult
-from app.models.violation import RuleViolation
 from app.models.snapshot import FolderHealthSnapshot
+from app.models.violation import RuleViolation
 from app.repositories import repository_repo
 from app.repositories.violation_repo import violation_repo
 from app.rules.base import RuleContext, RuleViolationInfo
 from app.rules.registry import get_registered_rules
 from app.schemas.violation import ViolationSummary
-from app.services.folder_coverage import FolderCoverageService
 from app.services.content_verification import ContentVerificationService
-from app.services.merge_delay import MergeDelayService
+from app.services.folder_coverage import FolderCoverageService
 from app.services.folder_health import FolderHealthService
+from app.services.merge_delay import MergeDelayService
 
 
 class ExceptionDetectionService:
@@ -25,10 +25,10 @@ class ExceptionDetectionService:
 
     def __init__(
         self,
-        coverage_service: Optional[FolderCoverageService] = None,
-        content_service: Optional[ContentVerificationService] = None,
-        delay_service: Optional[MergeDelayService] = None,
-        health_service: Optional[FolderHealthService] = None,
+        coverage_service: FolderCoverageService | None = None,
+        content_service: ContentVerificationService | None = None,
+        delay_service: MergeDelayService | None = None,
+        health_service: FolderHealthService | None = None,
     ) -> None:
         self.coverage_service = coverage_service or FolderCoverageService()
         self.content_service = content_service or ContentVerificationService()
@@ -37,7 +37,7 @@ class ExceptionDetectionService:
 
     async def evaluate_rules(
         self, db: AsyncSession, repository_id: uuid.UUID
-    ) -> ServiceResult[List[RuleViolation]]:
+    ) -> ServiceResult[list[RuleViolation]]:
         """Orchestrates full rule evaluations and updates database violations state (soft-resolving cleared items)."""
         repo = await repository_repo.get(db, repository_id)
         if not repo:
@@ -120,7 +120,7 @@ class ExceptionDetectionService:
         )
 
         # 8. Evaluate all registered rules
-        detected_violations: List[RuleViolationInfo] = []
+        detected_violations: list[RuleViolationInfo] = []
         rules = get_registered_rules()
         for rule in rules:
             try:
@@ -132,7 +132,7 @@ class ExceptionDetectionService:
         # 9. Sync with Database
         # Fetch existing active violations from DB
         existing_active = await violation_repo.get_active_for_repository(db, repository_id)
-        
+
         # Build lookup table for existing active violations
         # Key: (rule_id, jira_id, folder_name, file_path)
         existing_lookup = {}
@@ -147,7 +147,7 @@ class ExceptionDetectionService:
         # Process newly detected violations
         for dv in detected_violations:
             key = (dv.rule_id, dv.jira_id, dv.folder_name, dv.file_path)
-            
+
             if key in existing_lookup:
                 # Violation is still present, update details/description
                 ev = existing_lookup[key]
@@ -183,7 +183,7 @@ class ExceptionDetectionService:
 
         await db.commit()
         logger.info(
-            "Rule evaluation sync complete", 
+            "Rule evaluation sync complete",
             total_active=len(active_violations_to_return),
             newly_resolved=len(existing_active) - len(processed_ids)
         )
@@ -194,11 +194,11 @@ class ExceptionDetectionService:
         self,
         db: AsyncSession,
         repository_id: uuid.UUID,
-        severity: Optional[str] = None,
-        category: Optional[str] = None,
-        is_acknowledged: Optional[bool] = None,
-        is_resolved: Optional[bool] = None,
-    ) -> ServiceResult[List[RuleViolation]]:
+        severity: str | None = None,
+        category: str | None = None,
+        is_acknowledged: bool | None = None,
+        is_resolved: bool | None = None,
+    ) -> ServiceResult[list[RuleViolation]]:
         """Fetch all violations for a repository matching filtered criteria."""
         violations = await violation_repo.get_all_for_repository(
             db,
@@ -215,7 +215,7 @@ class ExceptionDetectionService:
         db: AsyncSession,
         violation_id: uuid.UUID,
         username: str,
-        note: Optional[str] = None
+        note: str | None = None
     ) -> ServiceResult[RuleViolation]:
         """Acknowledge an active violation with developer note and timestamp."""
         violation = await violation_repo.get(db, violation_id)

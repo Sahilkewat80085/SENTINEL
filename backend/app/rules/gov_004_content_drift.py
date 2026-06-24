@@ -1,4 +1,4 @@
-from typing import List
+
 from app.rules.base import GovernanceRule, RuleContext, RuleViolationInfo
 
 
@@ -21,7 +21,7 @@ class ContentDriftRule(GovernanceRule):
     def category(self) -> str:
         return "CONSISTENCY"
 
-    def evaluate(self, context: RuleContext) -> List[RuleViolationInfo]:
+    def evaluate(self, context: RuleContext) -> list[RuleViolationInfo]:
         violations = []
 
         for df in context.drift_report.drifted_files:

@@ -1,4 +1,4 @@
-from typing import List
+
 from app.rules.base import GovernanceRule, RuleContext, RuleViolationInfo
 from app.rules.registry import get_rules_config
 
@@ -22,7 +22,7 @@ class FolderRegressionRule(GovernanceRule):
     def category(self) -> str:
         return "CONSISTENCY"
 
-    def evaluate(self, context: RuleContext) -> List[RuleViolationInfo]:
+    def evaluate(self, context: RuleContext) -> list[RuleViolationInfo]:
         violations = []
         config = get_rules_config().get(self.rule_id, {})
         threshold = config.get("threshold_points", 10.0)

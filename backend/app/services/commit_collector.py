@@ -1,16 +1,17 @@
-from datetime import datetime, timedelta
 import re
-from typing import Any, Dict, List, Optional, Set
+from datetime import datetime, timedelta
+from typing import Any
+
 from github import Github, GithubException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.core.exceptions import ExternalServiceException, EntityNotFoundException
+from app.core.exceptions import EntityNotFoundException, ExternalServiceException
 from app.core.logging import logger
 from app.core.result import ServiceResult
 from app.models.repository import Repository
-from app.repositories.commit_repo import commit_repo
 from app.repositories.base import BaseRepository
+from app.repositories.commit_repo import commit_repo
 
 
 class CommitCollectorService:
@@ -23,9 +24,9 @@ class CommitCollectorService:
         self,
         db: AsyncSession,
         repository_id: Any,
-        since_date: Optional[datetime] = None,
-        until_date: Optional[datetime] = None,
-    ) -> ServiceResult[Dict[str, Any]]:
+        since_date: datetime | None = None,
+        until_date: datetime | None = None,
+    ) -> ServiceResult[dict[str, Any]]:
         """Main entry point to fetch and parse commits for a registered configuration."""
         repo = await self.repo_repo.get(db, repository_id)
         if not repo:
@@ -61,7 +62,7 @@ class CommitCollectorService:
                 return ServiceResult.success(result)
             return ServiceResult.failure(ExternalServiceException("GitHub", str(e)))
 
-    async def sync_incremental(self, db: AsyncSession, repository_id: Any) -> ServiceResult[Dict[str, Any]]:
+    async def sync_incremental(self, db: AsyncSession, repository_id: Any) -> ServiceResult[dict[str, Any]]:
         """Incremental synchronization starting from the last known commit SHA."""
         repo = await self.repo_repo.get(db, repository_id)
         if not repo:
@@ -74,36 +75,36 @@ class CommitCollectorService:
 
         return await self.sync_repository(db, repository_id, since_date=since_date)
 
-    async def _sync_local_commits_json(self, db: AsyncSession, repo_config: Repository) -> Dict[str, Any]:
+    async def _sync_local_commits_json(self, db: AsyncSession, repo_config: Repository) -> dict[str, Any]:
         """Loads and processes local commits from commits.json file to bypass GitHub API rate limits."""
-        import os
         import json
+        import os
         import uuid
         from datetime import timezone
-        
+
         path = "commits.json"
         if not os.path.exists(path):
             raise FileNotFoundError("commits.json not found")
-            
-        with open(path, "r", encoding="utf-8") as f:
+
+        with open(path, encoding="utf-8") as f:
             commits_data = json.load(f)
-            
+
         logger.info("Syncing commits from local commits.json", count=len(commits_data))
-        
+
         authors_to_upsert = []
         seen_emails = set()
-        
+
         commits_to_insert = []
-        
+
         for c in commits_data:
             # Check for Jira IDs
             message = c["message"]
             jira_ids = self.extract_jira_ids(message, repo_config.jira_patterns)
-            
+
             author_name = c["author_name"]
             author_email = c["author_email"]
             github_username = c.get("author_username")
-            
+
             if author_email not in seen_emails:
                 authors_to_upsert.append({
                     "name": author_name,
@@ -111,7 +112,7 @@ class CommitCollectorService:
                     "github_username": github_username
                 })
                 seen_emails.add(author_email)
-                
+
             # Parse files
             commit_files = []
             for f in c["files"]:
@@ -123,7 +124,7 @@ class CommitCollectorService:
                     "additions": f["additions"],
                     "deletions": f["deletions"]
                 })
-                
+
             # Date parsing
             try:
                 commit_date = datetime.fromisoformat(c["commit_date"].replace("Z", "+00:00")).astimezone(timezone.utc).replace(tzinfo=None)
@@ -132,7 +133,7 @@ class CommitCollectorService:
                     commit_date = datetime.strptime(c["commit_date"].split("+")[0], "%Y-%m-%dT%H:%M:%S")
                 except Exception:
                     commit_date = datetime.utcnow()
-            
+
             commits_to_insert.append({
                 "sha": c["sha"],
                 "repository_id": repo_config.id,
@@ -143,21 +144,21 @@ class CommitCollectorService:
                 "jira_ids": jira_ids,
                 "files": commit_files
             })
-            
+
         # Save to database
         email_to_id = await commit_repo.bulk_upsert_authors(db, authors_to_upsert)
-        
+
         final_commits = []
         final_files = []
         final_jiras = []
-        
+
         for c in commits_to_insert:
             author_id = email_to_id.get(c["author_email"])
             if not author_id:
                 continue
-                
+
             commit_uuid = uuid.uuid4()
-            
+
             final_commits.append({
                 "id": commit_uuid,
                 "sha": c["sha"],
@@ -167,7 +168,7 @@ class CommitCollectorService:
                 "message": c["message"],
                 "commit_date": c["commit_date"]
             })
-            
+
             for f in c["files"]:
                 final_files.append({
                     "commit_id": commit_uuid,
@@ -177,24 +178,24 @@ class CommitCollectorService:
                     "additions": f["additions"],
                     "deletions": f["deletions"]
                 })
-                
+
             for j in c["jira_ids"]:
                 final_jiras.append({
                     "commit_id": commit_uuid,
                     "jira_id": j
                 })
-                
+
         inserted_ids = await commit_repo.bulk_insert_commits_and_relations(
             db, final_commits, final_files, final_jiras
         )
-        
+
         # Update repository sync metrics
         repo_config.last_synced_at = datetime.utcnow()
         if final_commits:
             repo_config.last_sync_sha = final_commits[0]["sha"]
         db.add(repo_config)
         await db.commit()
-        
+
         return {
             "synced_commits_count": len(commits_data),
             "inserted_commits_count": len(inserted_ids),
@@ -205,9 +206,9 @@ class CommitCollectorService:
         self,
         db: AsyncSession,
         repo_config: Repository,
-        since_date: Optional[datetime] = None,
-        until_date: Optional[datetime] = None,
-    ) -> Dict[str, Any]:
+        since_date: datetime | None = None,
+        until_date: datetime | None = None,
+    ) -> dict[str, Any]:
         """Performs actual GitHub API communication using PyGithub."""
         # Clean owner/repo from URL
         # Format: https://github.com/owner/repo or git@github.com:owner/repo
@@ -220,7 +221,7 @@ class CommitCollectorService:
             g = Github(settings.GITHUB_PAT)
         else:
             g = Github()
-            
+
         try:
             gh_repo = g.get_repo(repo_fullname)
         except GithubException as ge:
@@ -250,7 +251,7 @@ class CommitCollectorService:
         for gh_commit in gh_commits[:100]:
             sha = gh_commit.sha
             commit_data = gh_commit.commit
-            
+
             author_name = commit_data.author.name
             author_email = commit_data.author.email
             github_username = gh_commit.author.login if gh_commit.author else None
@@ -304,7 +305,7 @@ class CommitCollectorService:
             if not author_id:
                 # Fallback resolve (in case of conflict bypass)
                 continue
-            
+
             c_id = c.get("id", None)
             # Create a placeholder ID so we can link files and jiras
             import uuid
@@ -353,18 +354,18 @@ class CommitCollectorService:
             "status": "success"
         }
 
-    def extract_jira_ids(self, message: str, patterns: List[str]) -> List[str]:
+    def extract_jira_ids(self, message: str, patterns: list[str]) -> list[str]:
         """Extracts unique Jira IDs matching regex patterns from commit message."""
         if not patterns:
             # Default fallback Jira regex pattern
             patterns = [r"[A-Z]{2,10}-\d{3,6}"]
 
-        jira_ids: Set[str] = set()
+        jira_ids: set[str] = set()
         for pattern in patterns:
             matches = re.findall(pattern, message)
             for m in matches:
                 jira_ids.add(m.upper())
-                
+
         # If no Jira IDs found, dynamically map known topics to mock Jira IDs so they show up in Jira Explorer
         if not jira_ids:
             msg_lower = message.lower()
@@ -398,13 +399,13 @@ class CommitCollectorService:
                 jira_ids.add("SEN-114")
             elif "bypass login" in msg_lower or "globals.css" in msg_lower or "slate" in msg_lower:
                 jira_ids.add("SEN-115")
-                
+
         if not jira_ids:
             jira_ids.add("SEN-100")
-            
+
         return list(jira_ids)
 
-    def map_file_to_folder(self, file_path: str, folders: List[str]) -> Optional[str]:
+    def map_file_to_folder(self, file_path: str, folders: list[str]) -> str | None:
         """Maps file path to root folder name if folder matches expectations list."""
         parts = file_path.strip("/").split("/")
         if parts and parts[0] in folders:
@@ -415,9 +416,9 @@ class CommitCollectorService:
         self,
         db: AsyncSession,
         repo: Repository,
-        since_date: Optional[datetime] = None,
-        until_date: Optional[datetime] = None,
-    ) -> Dict[str, Any]:
+        since_date: datetime | None = None,
+        until_date: datetime | None = None,
+    ) -> dict[str, Any]:
         """Generates mock data for developers to test dashboard and engines without token config."""
         # Predefined mock authors
         authors = [
@@ -450,12 +451,12 @@ class CommitCollectorService:
             author = random.choice(authors)
             author_id = email_to_id[author["email"]]
             jira = random.choice(jiras)
-            
+
             # Generate a series of folder merges for the SAME Jira to simulate propagation delay!
             # e.g., first commit in vanilla, then 2 days later in MET, then 5 days later in AMO
             # This makes the data extremely realistic for testing Modules 3, 4, 5, 6
             affected_folders = [folders[0]] # Vanilla is always first
-            
+
             # 80% chance it propagates to other folders
             if random.random() < 0.8:
                 other_folders = [f for f in folders[1:]]

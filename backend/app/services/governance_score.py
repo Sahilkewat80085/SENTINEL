@@ -1,14 +1,13 @@
-from typing import Any, Dict, List, Optional
 import uuid
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import EntityNotFoundException
-from app.core.logging import logger
 from app.core.result import ServiceResult
 from app.repositories import repository_repo
-from app.services.folder_health import FolderHealthService
-from app.services.exception_detection import ExceptionDetectionService
 from app.schemas.dashboard import GovernanceScoreDetail
+from app.services.exception_detection import ExceptionDetectionService
+from app.services.folder_health import FolderHealthService
 
 
 class GovernanceScoreService:
@@ -16,8 +15,8 @@ class GovernanceScoreService:
 
     def __init__(
         self,
-        health_service: Optional[FolderHealthService] = None,
-        violation_service: Optional[ExceptionDetectionService] = None,
+        health_service: FolderHealthService | None = None,
+        violation_service: ExceptionDetectionService | None = None,
     ) -> None:
         self.health_service = health_service or FolderHealthService()
         self.violation_service = violation_service or ExceptionDetectionService()

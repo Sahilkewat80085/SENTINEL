@@ -1,7 +1,8 @@
 import hashlib
-from typing import Any, Dict, List, Tuple
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any
+
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.core.exceptions import EntityNotFoundException
@@ -61,7 +62,7 @@ class ContentVerificationService:
 
     async def get_verification_summary_data(
         self, db: AsyncSession, repository_id: Any
-    ) -> ServiceResult[Dict[str, Any]]:
+    ) -> ServiceResult[dict[str, Any]]:
         """Returns statistics on the consistency of the files (total, identical, drifted)."""
         repo = await repository_repo.get(db, repository_id)
         if not repo:
@@ -90,7 +91,7 @@ class ContentVerificationService:
             "consistency_rating_pct": round((identical_count / total_files * 100), 2) if total_files > 0 else 100.0
         })
 
-    async def verify_repository_files(self, db: AsyncSession, repository_id: Any) -> ServiceResult[Dict[str, Any]]:
+    async def verify_repository_files(self, db: AsyncSession, repository_id: Any) -> ServiceResult[dict[str, Any]]:
         """Scans repository files at HEAD, computes hashes, and seeds file_hashes table.
 
         In mock-url environments, generates deterministic mock file hashes.
@@ -121,7 +122,7 @@ class ContentVerificationService:
         # Query existing commits to build file_hashes linking actual DB SHAs
         from app.models.commit import Commit
         from app.models.commit_file import CommitFile
-        
+
         stmt = (
             select(CommitFile.file_path, CommitFile.folder, Commit.sha, Commit.commit_date)
             .join(Commit)
@@ -134,13 +135,13 @@ class ContentVerificationService:
         for file_path, folder, sha, commit_date in rows:
             if not folder:
                 continue
-            
+
             # Strip folder prefix
             rel_path = file_path
             prefix = f"{folder}/"
             if file_path.startswith(prefix):
                 rel_path = file_path[len(prefix):]
-                
+
             key = (rel_path, folder)
             if key not in latest_hashes or commit_date > latest_hashes[key]["commit_date"]:
                 latest_hashes[key] = {
@@ -170,7 +171,7 @@ class ContentVerificationService:
             commit_date = val["commit_date"]
 
             base_hash = hashlib.sha256(rel_path.encode()).hexdigest()
-            
+
             # Simulate drift for demo purposes:
             # If the file path is settings.yaml or params.json, and it's not the primary folder,
             # make the hash divergent.

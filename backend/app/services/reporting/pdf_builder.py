@@ -5,20 +5,19 @@ Falls back to a detailed text manifest if WeasyPrint is unavailable.
 """
 from __future__ import annotations
 
-import io
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
 from html import escape
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logging import logger
-from app.services.governance_score import GovernanceScoreService
-from app.services.folder_health import FolderHealthService
-from app.services.folder_coverage import FolderCoverageService
-from app.services.merge_delay import MergeDelayService
 from app.services.exception_detection import ExceptionDetectionService
+from app.services.folder_coverage import FolderCoverageService
+from app.services.folder_health import FolderHealthService
+from app.services.governance_score import GovernanceScoreService
+from app.services.merge_delay import MergeDelayService
 
 try:
     import weasyprint
@@ -88,7 +87,7 @@ class PDFReportBuilder:
         self,
         db: AsyncSession,
         repository_id: uuid.UUID,
-        config: Optional[Dict[str, Any]] = None,
+        config: dict[str, Any] | None = None,
     ) -> bytes:
         """Generate the PDF and return raw bytes."""
         config = config or {}
@@ -109,7 +108,7 @@ class PDFReportBuilder:
         db: AsyncSession,
         repo_id: uuid.UUID,
         now: datetime,
-        config: Dict[str, Any],
+        config: dict[str, Any],
     ) -> str:
         """Assemble the full HTML string for the PDF report."""
         # ── Fetch all data ──────────────────────────────────────────────
@@ -142,7 +141,7 @@ class PDFReportBuilder:
         violations_html = self._build_violations_table(violations, viol_summary)
 
         return self._wrap_html(
-            title=f"SENTINEL Governance Report",
+            title="SENTINEL Governance Report",
             repo_id=str(repo_id),
             now=now,
             score_html=score_html,

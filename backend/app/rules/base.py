@@ -1,10 +1,11 @@
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
 import uuid
+from abc import ABC, abstractmethod
+from typing import Any
+
 from pydantic import BaseModel
 
-from app.schemas.coverage import CoverageMatrix
 from app.schemas.content import DriftReport
+from app.schemas.coverage import CoverageMatrix
 from app.schemas.delay import DelayResult
 from app.schemas.folder import FolderHealthResult
 
@@ -16,10 +17,10 @@ class RuleContext(BaseModel):
     repo: Any  # Repository model
     coverage_matrix: CoverageMatrix
     drift_report: DriftReport
-    delays: List[DelayResult]
-    folder_health: List[FolderHealthResult]
-    jira_summaries: List[Dict[str, Any]]
-    previous_health: Dict[str, float]
+    delays: list[DelayResult]
+    folder_health: list[FolderHealthResult]
+    jira_summaries: list[dict[str, Any]]
+    previous_health: dict[str, float]
 
     model_config = {"arbitrary_types_allowed": True}
 
@@ -30,11 +31,11 @@ class RuleViolationInfo(BaseModel):
     rule_id: str
     severity: str
     category: str
-    jira_id: Optional[str] = None
-    folder_name: Optional[str] = None
-    file_path: Optional[str] = None
+    jira_id: str | None = None
+    folder_name: str | None = None
+    file_path: str | None = None
     description: str
-    details: Dict[str, Any] = {}
+    details: dict[str, Any] = {}
     is_acknowledged: bool = False
 
 
@@ -66,6 +67,6 @@ class GovernanceRule(ABC):
         pass
 
     @abstractmethod
-    def evaluate(self, context: RuleContext) -> List[RuleViolationInfo]:
+    def evaluate(self, context: RuleContext) -> list[RuleViolationInfo]:
         """Evaluates the rule constraints against context. Returns list of violations."""
         pass

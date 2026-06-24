@@ -1,7 +1,7 @@
-from datetime import datetime
-from typing import List, Optional
 import uuid
-from pydantic import BaseModel, Field, ConfigDict
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class FolderCoverageDetail(BaseModel):
@@ -9,14 +9,14 @@ class FolderCoverageDetail(BaseModel):
 
     folder_name: str
     is_merged: bool
-    merge_date: Optional[datetime] = None
+    merge_date: datetime | None = None
 
 
 class JiraCoverageRow(BaseModel):
     """A row in the coverage matrix representing a single Jira's status across all target folders."""
 
     jira_id: str
-    folders: List[FolderCoverageDetail]
+    folders: list[FolderCoverageDetail]
     coverage_pct: float
     status: str = Field(..., description="MERGED | PARTIAL | MISSING")
 
@@ -27,8 +27,8 @@ class CoverageMatrix(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     repository_id: uuid.UUID
-    folders_list: List[str] = Field(..., description="List of folders acting as column headers")
-    rows: List[JiraCoverageRow]
+    folders_list: list[str] = Field(..., description="List of folders acting as column headers")
+    rows: list[JiraCoverageRow]
 
 
 class CoverageSummary(BaseModel):

@@ -1,23 +1,23 @@
-from datetime import datetime, timezone
 import math
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime, timezone
+from typing import Any
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import EntityNotFoundException
-from app.core.logging import logger
 from app.core.result import ServiceResult
 from app.repositories import repository_repo
-from app.services.folder_coverage import FolderCoverageService
 from app.schemas.delay import DelayResult, DelayStatistics, FolderDelayRank
+from app.services.folder_coverage import FolderCoverageService
 
 
 class MergeDelayService:
     """Service to compute merge delays, classifications, and environmental rankings."""
 
-    def __init__(self, coverage_service: Optional[FolderCoverageService] = None) -> None:
+    def __init__(self, coverage_service: FolderCoverageService | None = None) -> None:
         self.coverage_service = coverage_service or FolderCoverageService()
 
-    def _percentile(self, values: List[float], p: float) -> float:
+    def _percentile(self, values: list[float], p: float) -> float:
         """Helper to calculate percentile value from a list of floats."""
         if not values:
             return 0.0
@@ -33,7 +33,7 @@ class MergeDelayService:
 
     async def get_repository_delays(
         self, db: AsyncSession, repository_id: Any
-    ) -> ServiceResult[List[DelayResult]]:
+    ) -> ServiceResult[list[DelayResult]]:
         """Computes merge propagation delays and classifications for all repository Jiras."""
         matrix_res = await self.coverage_service.get_coverage_matrix_data(db, repository_id)
         if matrix_res.is_failure:
@@ -47,7 +47,7 @@ class MergeDelayService:
 
         for row in rows:
             # Map merge dates
-            folder_merge_dates: Dict[str, Optional[datetime]] = {}
+            folder_merge_dates: dict[str, datetime | None] = {}
             valid_dates = []
 
             for f in row.folders:
@@ -124,7 +124,7 @@ class MergeDelayService:
 
         # Calculate per-folder delay metrics
         # For each folder, gather delay offsets from initial_commit_date
-        folder_delays: Dict[str, List[float]] = {}
+        folder_delays: dict[str, list[float]] = {}
         for folder in repo.folders or []:
             folder_delays[folder] = []
 
@@ -138,7 +138,7 @@ class MergeDelayService:
                     delay_offset = (m_date - init_date).total_seconds() / 86400.0
                     folder_delays[folder_name].append(delay_offset)
 
-        folder_rankings: List[FolderDelayRank] = []
+        folder_rankings: list[FolderDelayRank] = []
         for folder_name, offsets in folder_delays.items():
             if not offsets:
                 continue

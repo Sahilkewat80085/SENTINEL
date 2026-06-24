@@ -1,7 +1,8 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
 import uuid
-from pydantic import BaseModel, Field, ConfigDict
+from datetime import datetime
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.violation import RuleViolationResponse
 
@@ -39,7 +40,7 @@ class RecentActivity(BaseModel):
     timestamp: datetime
     activity_type: str  # e.g. "sync", "violation_detected", "violation_acknowledged"
     description: str
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: dict[str, Any] = Field(default_factory=dict)
 
 
 class DashboardSummary(BaseModel):
@@ -47,5 +48,5 @@ class DashboardSummary(BaseModel):
 
     kpis: DashboardKPICard
     governance_score: GovernanceScoreDetail
-    recent_activity: List[RecentActivity] = Field(default_factory=list)
-    critical_items: List[RuleViolationResponse] = Field(default_factory=list)
+    recent_activity: list[RecentActivity] = Field(default_factory=list)
+    critical_items: list[RuleViolationResponse] = Field(default_factory=list)

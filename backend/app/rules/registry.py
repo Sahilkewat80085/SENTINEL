@@ -1,12 +1,14 @@
 import os
+from typing import Any
+
 import yaml
-from typing import Dict, Any, List
+
 from app.rules.base import GovernanceRule
 
-_config: Dict[str, Any] = {}
+_config: dict[str, Any] = {}
 
 
-def get_rules_config() -> Dict[str, Any]:
+def get_rules_config() -> dict[str, Any]:
     """Loads and caches rule configuration from config/rules.yaml."""
     global _config
     if not _config:
@@ -14,7 +16,7 @@ def get_rules_config() -> Dict[str, Any]:
         path = os.path.join(root_dir, "config", "rules.yaml")
         if os.path.exists(path):
             try:
-                with open(path, "r") as f:
+                with open(path) as f:
                     data = yaml.safe_load(f)
                     _config = data.get("rules", {}) if data else {}
             except Exception:
@@ -22,7 +24,7 @@ def get_rules_config() -> Dict[str, Any]:
     return _config
 
 
-def get_registered_rules() -> List[GovernanceRule]:
+def get_registered_rules() -> list[GovernanceRule]:
     """Returns instantiation of all registered governance rules."""
     # To be populated with rule imports
     from app.rules.gov_001_vanilla_only import VanillaOnlyRule
@@ -37,7 +39,7 @@ def get_registered_rules() -> List[GovernanceRule]:
     from app.rules.gov_010_zero_propagation import ZeroPropagationRule
 
     config = get_rules_config()
-    
+
     rules = [
         VanillaOnlyRule(),
         LowCoverageRule(),
@@ -50,12 +52,12 @@ def get_registered_rules() -> List[GovernanceRule]:
         MassMissingRule(),
         ZeroPropagationRule(),
     ]
-    
+
     # Filter only enabled rules
     enabled_rules = []
     for r in rules:
         rule_cfg = config.get(r.rule_id, {})
         if rule_cfg.get("enabled", True):
             enabled_rules.append(r)
-            
+
     return enabled_rules

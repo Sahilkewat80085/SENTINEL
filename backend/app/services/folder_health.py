@@ -1,15 +1,15 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
 
 from app.core.exceptions import EntityNotFoundException
-from app.core.logging import logger
 from app.core.result import ServiceResult
 from app.models.file_hash import FileHash
 from app.repositories import repository_repo
-from app.schemas.folder import FolderHealthResult, FolderHealthRank, HeatmapCell
-from app.services.folder_coverage import FolderCoverageService
+from app.schemas.folder import FolderHealthRank, FolderHealthResult, HeatmapCell
 from app.services.content_verification import ContentVerificationService
+from app.services.folder_coverage import FolderCoverageService
 from app.services.merge_delay import MergeDelayService
 
 
@@ -18,9 +18,9 @@ class FolderHealthService:
 
     def __init__(
         self,
-        coverage_service: Optional[FolderCoverageService] = None,
-        content_service: Optional[ContentVerificationService] = None,
-        delay_service: Optional[MergeDelayService] = None,
+        coverage_service: FolderCoverageService | None = None,
+        content_service: ContentVerificationService | None = None,
+        delay_service: MergeDelayService | None = None,
     ) -> None:
         self.coverage_service = coverage_service or FolderCoverageService()
         self.content_service = content_service or ContentVerificationService()
@@ -41,7 +41,7 @@ class FolderHealthService:
 
     async def compute_all_health(
         self, db: AsyncSession, repository_id: Any
-    ) -> ServiceResult[List[FolderHealthResult]]:
+    ) -> ServiceResult[list[FolderHealthResult]]:
         """Computes composite health scores for all configured folders in the repository."""
         repo = await repository_repo.get(db, repository_id)
         if not repo:
@@ -86,7 +86,7 @@ class FolderHealthService:
 
         # Calculate scores for each folder
         # Initialize calculations helper maps
-        folder_divergent_counts: Dict[str, int] = {f: 0 for f in folders}
+        folder_divergent_counts: dict[str, int] = dict.fromkeys(folders, 0)
         for drifted_file in drift_report.drifted_files:
             for f in drifted_file.divergent_folders:
                 if f in folder_divergent_counts:
@@ -170,7 +170,7 @@ class FolderHealthService:
 
     async def get_health_ranking(
         self, db: AsyncSession, repository_id: Any
-    ) -> ServiceResult[List[FolderHealthRank]]:
+    ) -> ServiceResult[list[FolderHealthRank]]:
         """Ranks all repository folders by their health score (highest first)."""
         all_res = await self.compute_all_health(db, repository_id)
         if all_res.is_failure:
@@ -194,7 +194,7 @@ class FolderHealthService:
 
     async def get_weakest_folders(
         self, db: AsyncSession, repository_id: Any, n: int = 3
-    ) -> ServiceResult[List[FolderHealthResult]]:
+    ) -> ServiceResult[list[FolderHealthResult]]:
         """Returns the weakest N folders in the repository based on health score (lowest first)."""
         all_res = await self.compute_all_health(db, repository_id)
         if all_res.is_failure:
@@ -206,7 +206,7 @@ class FolderHealthService:
 
     async def get_heatmap_data(
         self, db: AsyncSession, repository_id: Any
-    ) -> ServiceResult[List[HeatmapCell]]:
+    ) -> ServiceResult[list[HeatmapCell]]:
         """Generates flat heatmap representation for all metric scores per folder."""
         all_res = await self.compute_all_health(db, repository_id)
         if all_res.is_failure:

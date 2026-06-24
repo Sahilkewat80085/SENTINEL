@@ -7,27 +7,25 @@ from __future__ import annotations
 import io
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logging import logger
-from app.services.governance_score import GovernanceScoreService
-from app.services.folder_health import FolderHealthService
-from app.services.folder_coverage import FolderCoverageService
-from app.services.content_verification import ContentVerificationService
-from app.services.merge_delay import MergeDelayService
-from app.services.exception_detection import ExceptionDetectionService
-from app.services.trend_analytics import TrendAnalyticsService
 from app.repositories import commit_repo, repository_repo
+from app.services.content_verification import ContentVerificationService
+from app.services.exception_detection import ExceptionDetectionService
+from app.services.folder_coverage import FolderCoverageService
+from app.services.folder_health import FolderHealthService
+from app.services.governance_score import GovernanceScoreService
+from app.services.merge_delay import MergeDelayService
+from app.services.trend_analytics import TrendAnalyticsService
 
 try:
     import openpyxl
-    from openpyxl.styles import (
-        PatternFill, Font, Alignment, Border, Side, GradientFill
-    )
-    from openpyxl.utils import get_column_letter
     from openpyxl.chart import BarChart, Reference
+    from openpyxl.styles import Alignment, Border, Font, GradientFill, PatternFill, Side
+    from openpyxl.utils import get_column_letter
     HAS_OPENPYXL = True
 except ImportError:
     HAS_OPENPYXL = False
@@ -149,7 +147,7 @@ class ExcelReportBuilder:
         self,
         db: AsyncSession,
         repository_id: uuid.UUID,
-        config: Optional[Dict[str, Any]] = None,
+        config: dict[str, Any] | None = None,
     ) -> bytes:
         """Generate the full workbook and return raw bytes (.xlsx)."""
         if not HAS_OPENPYXL:

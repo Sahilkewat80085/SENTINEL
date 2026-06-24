@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import EntityNotFoundException
@@ -23,11 +24,11 @@ class JiraAggregationService:
         """
         # Ensure timezone-aware comparisons
         now = datetime.now(timezone.utc)
-        
+
         # Normalize last_updated to be timezone-aware (matching PostgreSQL timestamptz)
         if last_updated.tzinfo is None:
             last_updated = last_updated.replace(tzinfo=timezone.utc)
-            
+
         delta = now - last_updated
         days = delta.days
 
@@ -48,7 +49,7 @@ class JiraAggregationService:
         search: Optional = None,
         skip: int = 0,
         limit: int = 50,
-    ) -> ServiceResult[Tuple[List[JiraSummary], int]]:
+    ) -> ServiceResult[tuple[list[JiraSummary], int]]:
         """Fetch paginated lists of Jira summaries, computing their lifecycles."""
         try:
             summaries, total = await jira_repo.get_jira_summaries(
@@ -92,7 +93,7 @@ class JiraAggregationService:
         summaries, _ = await jira_repo.get_jira_summaries(
             db, repository_id=repository_id, search=jira_id, skip=0, limit=1
         )
-        
+
         # Verify if ticket is found in database
         target_summary = None
         for s in summaries:
@@ -105,7 +106,7 @@ class JiraAggregationService:
 
         # Get chronological commit timeline
         raw_timeline = await jira_repo.get_jira_timeline(db, jira_id, repository_id)
-        
+
         timeline_items = []
         for t in raw_timeline:
             timeline_items.append(

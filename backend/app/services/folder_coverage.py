@@ -1,8 +1,8 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import EntityNotFoundException
-from app.core.logging import logger
 from app.core.result import ServiceResult
 from app.repositories import repository_repo
 from app.repositories.folder_repo import folder_repo
@@ -38,20 +38,20 @@ class FolderCoverageService:
         raw_matrix = await folder_repo.get_coverage_matrix(db, repository_id)
 
         # Group by Jira ID
-        jira_groups: Dict[str, List[Dict[str, Any]]] = {}
+        jira_groups: dict[str, list[dict[str, Any]]] = {}
         for item in raw_matrix:
             jira_id = item["jira_id"]
             if jira_id not in jira_groups:
                 jira_groups[jira_id] = []
             jira_groups[jira_id].append(item)
 
-        rows: List[JiraCoverageRow] = []
+        rows: list[JiraCoverageRow] = []
 
         for jira_id, mappings in jira_groups.items():
             # Create a lookup mapping for quick access
             mapped_lookup = {m["expected_folder"]: m for m in mappings}
 
-            folder_details: List[FolderCoverageDetail] = []
+            folder_details: list[FolderCoverageDetail] = []
             merged_count = 0
 
             for folder in expected_folders:
@@ -131,14 +131,14 @@ class FolderCoverageService:
 
     async def get_missing_merges_list(
         self, db: AsyncSession, repository_id: Any
-    ) -> ServiceResult[List[MissingMerge]]:
+    ) -> ServiceResult[list[MissingMerge]]:
         """Compiles a flat list of folder targets that are missing updates for committed Jiras."""
         repo = await repository_repo.get(db, repository_id)
         if not repo:
             return ServiceResult.failure(EntityNotFoundException("Repository", repository_id))
 
         raw_missing = await folder_repo.get_missing_merges_raw(db, repository_id)
-        
+
         missing_merges = []
         for item in raw_missing:
             missing_merges.append(
