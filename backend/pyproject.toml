@@ -13,6 +13,7 @@ select = [
 ignore = [
     "B008", # Do not perform function calls in argument defaults (fastapi Depends)
     "W191", # Indentation contains tabs (handled by formatter)
+    "E501", # Line too long
 ]
 
 [tool.ruff.format]

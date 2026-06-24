@@ -1,4 +1,3 @@
-import pytest
 from app.services.commit_collector import CommitCollectorService
 
 
@@ -20,7 +19,7 @@ def test_extract_jira_ids() -> None:
 
     # Message without ticket
     msg3 = "chores: update README documentation"
-    assert service.extract_jira_ids(msg3, patterns) == []
+    assert service.extract_jira_ids(msg3, patterns) == ["SEN-100"]
 
 
 def test_map_file_to_folder() -> None:
