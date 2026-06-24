@@ -8,8 +8,9 @@ import {
   FolderDelayRank, FolderHealthRank
 } from './types';
 
-// In a bare-metal execution, default to the local FastAPI port
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// In Docker behind Nginx: NEXT_PUBLIC_API_URL is not set, so calls go to /api/v1 (relative, proxied by Nginx)
+// In local dev (no nginx): set NEXT_PUBLIC_API_URL=http://localhost:8000
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
